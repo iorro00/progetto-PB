@@ -1,0 +1,1163 @@
+#signin {
+    background-color: #007bff; /* Colore di sfondo blu */
+    color: #fff; /* Colore del testo bianco */
+    padding: 10px 20px; /* Spaziatura interna del testo */
+    border: none; /* Nessun bordo */
+    border-radius: 5px; /* Angoli arrotondati */
+    cursor: pointer; /* Cambia il cursore quando si passa sopra */
+    font-size: 16px; /* Dimensione del testo */
+    text-align: center; /* Allineamento testo al centro */
+    text-decoration: none; /* Nessun decorazione del testo */
+    display: inline-block; /* Rende il bottone un elemento a blocco */
+    width: 200px;
+    height: 45px;
+    background-color: #00245d;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+/* Stili per il bottone al passaggio del mouse */
+#signin:hover {
+    background-color: #2a4b78; /* Cambia il colore di sfondo al passaggio del mouse */
+}
+
+h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 50px;
+    color: black;
+}
+
+#box3{
+    display: flex;
+    align-items: center;
+}
+
+#box3 h1{
+    font-family: 'Orbitron', sans-serif;
+    margin: 0; /* Rimuovi il margine attorno al testo */
+    font-size: 50px; /* Dimensione del carattere del testo */
+    margin-left: 10px;
+    margin-top: 15px;
+}
+
+#box{
+    width: 100%; /* larghezza del contenitore */
+    height: 100%; /* altezza del contenitore */
+    display: flex; /* utilizza il layout flexbox */
+    justify-content: center; /* centra orizzontalmente i figli */
+    align-items: center; /* centra verticalmente i figli */
+    text-align: center; /* allinea il testo al centro all'interno del contenitore */
+    margin-top: 150px;
+}
+#box2{
+    width: 100%; /* larghezza del contenitore */
+    height: 100%; /* altezza del contenitore */
+    display: flex; /* utilizza il layout flexbox */
+    justify-content: center; /* centra orizzontalmente i figli */
+    align-items: center; /* centra verticalmente i figli */
+    text-align: center; /* allinea il testo al centro all'interno del contenitore */
+    flex-direction: column;
+}
+
+.ButtGenerale{
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    width: 300px;
+    height: 80px;
+    background-color: #e3e8ee;
+    transition-duration: 0.4s;
+    margin-bottom: 20px;
+    border: 2px solid #00245d;
+    color: #00245d;  
+}
+
+#buttVisua{
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ButtGenerale:hover{
+    background-color: #00245d; /* Cambia il colore di sfondo al passaggio del mouse */
+    border: none;
+    color: white;
+}
+
+
+.rendi{
+    height: 60px;
+    width: 60px;
+}
+
+p{
+    font-size: 30px;
+    margin-top: 35px;
+    margin-bottom: 40px;
+    color: #00245d;
+    font-family: "Merriweather sans";
+    text-align:center;
+}
+.subTit{
+    font-size: 25px;
+    margin-bottom: 20px;
+    color: #00245d;
+    font-family: "Merriweather sans";
+    text-align:center;
+}
+
+#exit-link{
+    font-size: 18px;
+    margin-top: 70px;
+    color: black;
+    font-family: "Merriweather sans";
+    text-decoration: none;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+#exit-link:hover {
+    text-decoration: none; /* Sottolinea il testo al passaggio del mouse */
+    color:#00122f;
+}
+
+#exit-link:active {
+    color: #00245d; /* Mantieni il colore blu anche durante lo stato attivo */
+    text-decoration: none;
+}
+
+#exit-link:visited {
+    color: #00245d; /* Mantieni il colore blu anche dopo essere stato visitato */
+    text-decoration: none;
+}
+
+#pb-link{
+    font-family: 'Orbitron', sans-serif;
+    font-size: 50px;
+    margin-top: 70px;
+    color: black;
+    text-decoration: none;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+#pb-link:hover {
+    text-decoration: none; /* Sottolinea il testo al passaggio del mouse */
+    color:black;
+}
+
+#pb-link:active {
+    color: black; /* Mantiene il colore nero anche durante lo stato attivo */
+    text-decoration: none;
+}
+
+#pb-link:visited {
+    color: black; /* Mantiene il colore nero anche dopo essere stato visitato */
+    text-decoration: none;
+}
+
+body{
+    background-image: url('img/background.png'); /* Percorso dell'immagine di sfondo */
+    background-size: cover; /* Visualizza l'immagine di sfondo per intero senza distorsioni */
+    background-position: center; /* Centra l'immagine di sfondo */
+    background-attachment: fixed;
+    overflow: scroll;
+}
+img{
+    width: 100px;
+    padding-right: 10px;
+}
+
+label{
+	color: #00245d;
+    font-family: "Merriweather sans";
+    font-size:20px;
+}
+
+#origineProg{
+	margin-top:35px;
+}
+
+#cont1, #cont2, #cont3{
+	margin-bottom: 20px;
+}
+
+.colonna{
+	display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%; 
+}
+
+#colonnaBis{
+	display: flex;
+    flex-direction: column;
+    align-items: center;  
+    width: 100%;
+    height: 100%; 
+}
+
+#colonna6b{
+	display:inline-block;
+}
+
+.content{
+	margin-left: auto;
+    margin-right: auto;
+}
+
+#tbMesi{
+	margin-bottom: 50px;
+}
+
+input[type="checkbox"] {
+    appearance: none; /* Nasconde lo stile predefinito del browser */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 20px; /* Dimensioni della checkbox */
+    height: 20px;
+    border: 2px solid #00245d; /* Bordo della checkbox */
+    border-radius: 4px; /* Angoli arrotondati */
+    outline: none; /* Rimuove il contorno */
+    cursor: pointer; /* Mostra il cursore come puntatore */
+    transition: border-color 0.3s ease; /* Effetto di transizione sul cambio di colore del bordo */
+}
+
+input[type="checkbox"]:checked {
+    border-color: #00245d; /* Cambia il colore del bordo quando la checkbox è selezionata */
+    background-color: #00245d; /* Aggiunge uno sfondo quando la checkbox è selezionata */
+}
+
+#annata, #indirizzo, #oreMatPom{
+	width:100%;
+    display: contents;
+    margin-bottom: 20px;
+}
+
+#indirizzo td, #annata td {
+    text-align: right;
+}
+
+.comp {
+	display: inline-block;
+    font-family: "Merriweather sans";
+    color:white;
+}
+
+#ButtGeneraRis, #ButtGeneraRisExt{
+	padding: -1px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    width: 130px;
+    height: 40px;
+    background-color: #e3e8ee;
+    transition-duration: 0.4s;
+    margin-bottom: 0px;
+    border: 2px solid #00245d;
+    color: #00245d;
+    font-family: "Merriweather sans";
+}
+
+#ButtGeneraRis:hover{
+	background-color: #00245d; /* Cambia il colore di sfondo al passaggio del mouse */
+    border: none;
+    color: white;
+}
+
+#ButtGeneraRisExt:hover{
+	background-color: #00245d; /* Cambia il colore di sfondo al passaggio del mouse */
+    border: none;
+    color: white;
+}
+
+#numRisorse, #ButtGeneraRis, #ButtGeneraRisExt, #numRisorseExt{
+    display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 10px;
+}
+
+.lbRis{
+	margin-bottom:10px;
+}
+
+#risorse,#risorseExt{
+	display: flex;
+    text-align: center;
+    flex-direction: column;
+    align-items: center;
+    width: 560px;
+}
+
+#risorse label{
+	margin-top: 25px;
+    font-size: 15px;
+    margin-bottom: 5px;
+}
+
+#risorseExt label{
+	margin-top: 25px;
+    font-size: 15px;
+    margin-bottom: 5px;
+}
+
+input, select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+select {
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    color:#00245d;
+    width:175px;
+}
+
+select:focus {
+    outline: none;
+    border: 2px solid #00245d;
+}
+
+input:focus {
+    outline: none;
+    border: 2px solid #00245d;
+}
+
+.error-message{
+	color:red;
+    font-family:"Merriweather sans";
+    text-align:center;
+}
+
+#avanti,#indietro{
+	cursor: pointer;
+    padding: 5px 13px;
+    margin: 10px;
+    background-color: white;
+    border-radius: 40px;
+}
+
+#reset{
+    padding: -1px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    width: 130px;
+    height: 40px;
+    background-color: #e3e8ee;
+    transition-duration: 0.4s;
+    margin-bottom: 0px;
+    border: 2px solid #00245d;
+    color: #00245d;
+    font-family: "Merriweather sans";
+    margin-top:30px;
+}
+
+#reset:hover{
+    background-color: #00245d;
+    color: #e3e8ee;
+}
+
+#buttInd{
+	display:flex;
+    margin:auto;
+    justify-content: center;
+}
+
+#buttons{
+	display: flex;
+    align-items: center;
+    text-align:center;
+    justify-content: center;
+    margin-top: 25px;
+}
+
+/*#buttons{
+	display: none;
+    align-items: center;
+    text-align:center;
+    justify-content: center;
+    margin-top: 25px;
+}*/
+
+#checkbox{
+	display: flex;
+    justify-content: center;
+    align-items: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+#checkbox label {
+    margin-bottom: 10px; /* Spazio inferiore tra ogni label */
+}
+
+#login{
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 250px; /* Larghezza desiderata */
+  height: 65px; /* Altezza desiderata */
+}
+
+/* Stile quando la checkbox è selezionata */
+input[type="checkbox"]:checked {
+    border-color: #00245d; /* Cambia il colore del bordo quando la checkbox è selezionata */
+    background-color: #00245d; /* Aggiunge uno sfondo quando la checkbox è selezionata */
+}
+
+/* Stile del segnaposto (placeholder) per la checkbox */
+input[type="checkbox"] + label {
+    margin-left: 8px; /* Spazio a sinistra della label */
+    font-weight: normal; /* Stile del testo normale per la label */
+}
+
+/* Stile della label quando la checkbox è selezionata */
+#tbComp input[type="checkbox"]:checked + label{
+    color: #00245d; /* Cambia il colore del testo quando la checkbox è selezionata */
+}
+
+textarea {
+    width: 75%;
+    height: 150px;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    resize: vertical; /* Permette solo il ridimensionamento verticale */
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1;
+    margin-bottom: 75px;
+}
+
+/* Stile quando la textarea è in focus */
+textarea:focus {
+    border: 2px solid #00245d; /* Cambia colore del bordo quando in focus */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Aggiunge ombra leggera */
+}
+
+/* Stile per il testo all'interno della textarea */
+textarea::placeholder {
+    color: #aaa; /* Colore del testo di esempio */
+}
+
+#areaComp{
+    border-collapse: collapse;
+	padding: 8px;
+    text-align: center;
+    font-family: "Merriweather sans";
+    color: #00245d;
+    margin-bottom: 40px;
+    width: 45%;
+    justify-content: center;
+    align-items: center;
+}
+
+.tbVisua, #tbRendi, #tbVisuaDetails{
+	border-collapse: collapse;
+	padding: 8px;
+    text-align: center;
+    font-family: "Merriweather sans";
+    color: #00245d;
+    width: 60%;
+    justify-content: center;
+    align-items: center;
+    -webkit-border-radius: 10px;
+    -webkit-border-bottom-right-radius: 0px;
+    background-color:white;
+    overflow: hidden;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.5);
+    margin-top: 30px;
+}
+
+#tbVisuaDetails{
+	width: 45%;
+}
+
+.tbVisua th,
+.tbVisua td {
+    padding: 10px;
+}
+
+#tbRendi th,
+#tbRendi td {
+    padding: 10px;
+}
+
+#tbVisuaDetails th,
+#tbVisuaDetails td {
+    padding: 10px;
+}
+
+.tbVisua tr:not(:last-child) th,
+.tbVisua tr:not(:last-child) td {
+    border-bottom: 1px solid #0D3677;
+}
+
+#tbRendi tr:not(:last-child) th,
+#tbRendi tr:not(:last-child) td {
+    border-bottom: 1px solid #0D3677;
+}
+
+#tbVisuaDetails tr:not(:last-child) th,
+#tbVisuaDetails tr:not(:last-child) td {
+    border-bottom: 1px solid #0D3677;
+}
+
+.tbVisua:first-of-type tr:not(:first-child):hover {
+    background-color: #0D3677;
+    color:white;
+    transition-duration: 0.3s;
+    cursor: pointer;
+
+}
+
+#tbRendi tr:not(:first-child):hover {
+    background-color: #0D3677;
+    cursor: pointer;
+    transition-duration: 0.3s;
+    color:white;
+}
+
+#TabClassi{
+    border-collapse: collapse;    
+}
+#TabClassi td {
+    vertical-align: middle; /* allinea il contenuto verticalmente al centro */
+    text-align:right;
+    padding-bottom: 10px;
+    padding-right: 3px;
+}
+
+#TabClassi input[type="checkbox"] {
+    margin-right: 20px;
+}
+
+#tbComp td{
+	vertical-align: middle; /* allinea il contenuto verticalmente al centro */
+    text-align:left;
+    padding-bottom: 10px;
+    padding-right: 3px;
+}
+
+#tbNuovo td{
+	vertical-align: middle; /* allinea il contenuto verticalmente al centro */
+    text-align:left;
+    padding-bottom: 10px;
+    padding-right: 3px;
+}
+
+#tbAreaComp{
+	margin-left: auto;
+    margin-right: auto;
+    font-family: "Merriweather sans";
+    color: #00245d;
+    
+}
+
+#tbAreaComp tr td:first-child{
+	font-size: 14px;
+    text-align:right;
+}
+
+#submit{
+	display: inline-block;
+    margin-left: 20px;
+    width: 90px;
+    height: 45px;
+    cursor: pointer;
+    background-color: #e3e8ee;
+    border: 2px solid #00245d;
+    color: #00245d;
+    transition-duration: 0.4s;
+}
+
+#submit2{
+	display: inline-block;
+    margin-left: 20px;
+    width: 90px;
+    height: 45px;
+    cursor: pointer;
+    background-color: #e3e8ee;
+    border: 2px solid #00245d;
+    color: #00245d;
+    transition-duration: 0.4s;
+    float: right;
+    margin-top: 35px;
+}
+
+#submit3{
+	display: inline-block;
+    margin-left: 20px;
+    width: 90px;
+    height: 45px;
+    cursor: pointer;
+    background-color: #e3e8ee;
+    border: 2px solid #00245d;
+    color: #00245d;
+    transition-duration: 0.4s;
+    float: right;
+    margin-top: 120px;
+}
+
+#submit:hover{
+	background-color: #00245d;
+    color: white;
+}
+
+#submit2:hover{
+	background-color: #00245d;
+    color: white;
+}
+
+#submit3:hover{
+	background-color: #00245d;
+    color: white;
+}
+
+#selectAll, #deselectAll, #butt-filtri, #submitFiltri{ 
+	display:inline-block;
+    font-size: 14px;
+    background-color: white;
+    padding: 12px;
+    border-radius: 15px;
+    cursor:pointer;
+    transition-duration: 0.4s;
+    color:#00245d;
+    border: 1px solid #00245d;
+}
+
+#butt-stampa{
+    display: flex;
+    margin: auto;
+    font-size: 14px;
+    background-color: white;
+    padding: 12px;
+    border-radius: 15px;
+    cursor:pointer;
+    transition-duration: 0.4s;
+    color:#00245d;
+    border: 1px solid #00245d;
+    margin-top: 30px;
+}
+
+
+/* Contenitore per il titolo e il bottone "Filtri" */
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.header-container p {
+    margin: 0;
+    text-align: center;
+    margin-right: 10px; /* Spazio tra il titolo e il bottone */
+}
+
+#butt-filtri {
+    margin-left: 10px; /* Spazio tra il titolo e il bottone */
+}
+
+#selectAll:hover{
+    background-color: #00245d;
+    color:white;
+}
+
+#deselectAll:hover{
+    background-color: #00245d;
+    color:white;
+}
+
+#butt-filtri:hover{
+    background-color: #00245d;
+    color:white;
+}
+
+#butt-stampa:hover{
+    background-color: #00245d;
+    color:white;
+}
+
+#submitFiltri:hover{
+    background-color: #00245d;
+    color:white;
+}
+
+#titVisua{
+	font-size: 40px;
+    margin-bottom: 40px;
+    margin-top: 20px;
+}
+
+.hidden {
+    display: none;
+}
+
+#boxOreEff {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Sfoca il resto della pagina */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(2px); /* Imposta il livello di sfocatura */
+}
+
+.boxOreEff-content {
+    background: white;
+    margin-top: 125px;
+    width: 70%;
+    height: 55%;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#boxFiltri {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Sfoca il resto della pagina */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(2px); /* Imposta il livello di sfocatura */
+}
+
+.boxFiltri-content {
+    background: white;
+    margin-top: 20px;
+    width: 50%;
+    height: 90%;
+    border-radius: 15px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    overflow-y: auto; 
+}
+
+
+#closePopup{
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 25px;
+    cursor: pointer;
+    color: #00245d;
+}
+
+#subTitPopup{
+	 margin-top: 0px;
+}
+
+.subLab{
+	font-size: 15px;
+    margin-right: 20px;
+}
+
+#contOreEff{
+	display: table;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#tbOreEff{
+	margin:auto;
+}
+
+#tbOreEff td{
+	text-align:right;
+}
+
+#popupOverlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Sfondo semitrasparente */
+    z-index: 9999; /* Z-index alto per stare sopra gli altri elementi */
+    display: none; /* Nascondi di default */
+}
+
+#popupContainer{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    width: 40vw;
+    min-height: 18vw;
+    border-radius: 20px;
+    border: 5px solid white;
+    background-color: white;
+}
+
+#insOreEff, #insOreDocEff{
+	font-size: 30px;
+    cursor: pointer;
+    color: #00245d;
+    transition-duration: 0.3s;
+    padding-left: 7px;
+    padding-right: 7px;
+}
+
+#insOreEff:hover{
+	color:white;
+    border: 2px solid #00245d;
+    background-color:#00245d;
+    border-radius:30px;
+    cursor: pointer;
+}
+#insOreDocEff:hover{
+	color:white;
+    border: 2px solid #00245d;
+    background-color:#00245d;
+    border-radius:30px;
+    cursor: pointer;
+}
+.deleteIcon{
+	padding: 0px;
+    width: 25px;
+    transition: filter 0.3s ease;
+    margin-right: 5px;
+}
+
+.modIcon{
+	padding: 0px;
+    width: 35px;
+    transition: filter 0.3s ease;
+    margin-right: 5px;
+}
+.deleteIcon:hover {
+    filter: brightness(0) saturate(100%) invert(19%) sepia(95%) saturate(4631%) hue-rotate(349deg) brightness(104%) contrast(128%);
+}
+.extra-option{
+    height: 19px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    position: absolute;
+    background-color: white;
+    border: 1px solid #00245d;
+    border-left: none;
+    padding: 10px;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition-duration: 0.3s;
+}
+.extra-option-left{
+	height: 19px;
+    width: 35px;
+    position: absolute;
+    background-color: white;
+    border: 1px solid #00245d;
+    border-left: none;
+    padding: 10px;
+    padding-left: 15px;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition-duration: 0.3s;
+}
+.extra-option:hover {
+    background-color: red;
+    border: 1px solid #a10000;
+    cursor:pointer;
+}
+.extra-option:hover img {
+  	filter: invert(1);
+}
+
+.extra-option-left:hover {
+    background-color: #00245d;
+    border: 1px solid #00122e;
+    border-left: none;
+    cursor:pointer;
+}
+.extra-option-left:hover img {
+  	filter: invert(1);
+}
+
+#confermaElim, #confermaElim2, #modifica-campo, #modifica-campo-classi, #add-ris, #aggiungi, #aggiungi-classe {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  overflow: auto;
+  justify-content: center;
+  align-items: center;
+}
+.confermaElim-content, .modifica-campo-content, .modifica-campo-classi-content, .add-ris-content, .aggiungi-content, .aggiungi-content-classe {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  border-radius: 10px;
+  text-align: center;
+  width: 55%;
+  height: 28%;
+  margin-top:200px;
+}
+.modifica-campo-classi-content, .add-ris-content{
+	height: 100%;
+    margin-bottom:100px;
+    overflow: auto;
+}
+
+.aggiungi-content-classe{
+	height: 70%;
+    margin-bottom:100px;
+    overflow: auto;
+}
+
+
+.conf-button {
+    margin-top: 10px;
+    width: 90px;
+    height: 45px;
+    cursor: pointer;
+    border-radius: 10px;
+    background-color: #e3e8ee;
+    border: 2px solid #00245d;
+    color: #00245d;
+    transition-duration: 0.4s;
+}
+
+.conf-button:hover {
+	background-color: #00245d;
+    color: white;
+}
+
+#submitModifiche {
+    margin-top: 10px;
+    margin-left: 20px;
+    width: 90px;
+    height: 45px;
+    cursor: pointer;
+    border-radius: 10px;
+    background-color: #e3e8ee;
+    border: 2px solid #00245d;
+    color: #00245d;
+    transition-duration: 0.4s;
+}
+
+#submitModifiche:hover {
+	background-color: #00245d;
+    color: white;
+}
+
+
+.mod_campo:hover{
+	cursor:pointer;
+    background-color: #00245d;
+    color: white;
+}
+
+#newAspDid{
+    display:flex;
+    margin:auto;
+	height:55px;
+    margin-top:10px;
+    margin-bottom:0;
+}
+
+#closer{
+	display: flex;
+    font-size: 25px;
+    cursor: pointer;
+    color: #00245d;
+    float: right;
+    margin-top: -10px;
+}
+.titMod{
+	margin-top: 20px;
+    margin-bottom: 15px;
+}
+
+
+#modTempi {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top:15px;
+}
+
+#modTempi td {
+    padding: 7px;
+    padding-left: 0px;
+    text-align: center;
+}
+
+.checkbox-mod-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size:17px;
+}
+
+.checkbox-mod-label input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+#annata2, #indirizzo2{
+    display: grid;
+    flex: 1;
+}
+
+.tbClassi{
+	display: ruby-text;
+}
+
+#newCostiEventualiRisExt{
+	height: 70px;
+    margin-bottom: 0px;
+    display: flex;
+    margin: auto;
+}
+
+#conButt{
+	text-align:center;
+    margin-top: 35px;
+    margin-bottom: 30px;
+}
+
+#inviaModifiche{
+    height: 45px;
+    cursor: pointer;
+    border-radius: 10px;
+    background-color: #e3e8ee;
+    border: 2px solid #00245d;
+    color: #00245d;
+    transition-duration: 0.4s;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+#annullaModifiche{
+    height: 45px;
+    cursor: pointer;
+    border-radius: 10px;
+    background-color: #e3e8ee;
+    border: 2px solid #00245d;
+    color: #00245d;
+    transition-duration: 0.4s;
+    display: inline-block;
+}
+
+#inviaModifiche:hover {
+	background-color: #00245d;
+    color: white;
+}
+
+#annullaModifiche:hover {
+	background-color: #00245d;
+    color: white;
+    border-color:#00245d;
+}
+
+#miniTit, #miniTit2, #miniTitDoc, #miniTitClass{
+    font-size: 15px;
+    color: #00245d;
+    font-family: "Merriweather sans";
+    text-align:center;
+    margin-left: 20px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+#miniTit:hover {
+	font-size: 15px;
+    color: white;
+    text-decoration:underline;
+    cursor: pointer;
+}
+
+#miniTit2:hover {
+	font-size: 15px;
+    color: white;
+    text-decoration:underline;
+    cursor: pointer;
+}
+
+#miniTitDoc:hover {
+	font-size: 15px;
+    color: white;
+    text-decoration:underline;
+    cursor: pointer;
+}
+
+#miniTitClass:hover {
+	font-size: 15px;
+    color: white;
+    text-decoration:underline;
+    cursor: pointer;
+}
+
+#contTit{
+	display: ruby-text;
+    text-align: center;
+    margin: auto;
+}
+
+.add-ris-content{
+	width: 500px;
+    margin: auto;
+}
+
+#contNewRis{
+    display: grid;
+    margin: auto;
+    justify-items: center;
+}
+
+.labelRis, .labAddRis{
+    font-size: 17px;
+    margin-bottom: 10px;
+    margin-top: 25px;
+}
+
+.delete{
+	height: 40px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  display:flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+#newAnnata, #newSezione, #newIndirizzo{
+	margin-bottom:25px;
+}
