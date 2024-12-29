@@ -1,10 +1,47 @@
-<?php
-$type = 'Core';
-$name = 'Courier-Oblique';
-$up = -100;
-$ut = 50;
-for($i=0;$i<=255;$i++)
-	$cw[chr($i)] = 600;
-$enc = 'cp1252';
-$uv = array(0=>array(0,128),128=>8364,130=>8218,131=>402,132=>8222,133=>8230,134=>array(8224,2),136=>710,137=>8240,138=>352,139=>8249,140=>338,142=>381,145=>array(8216,2),147=>array(8220,2),149=>8226,150=>array(8211,2),152=>732,153=>8482,154=>353,155=>8250,156=>339,158=>382,159=>376,160=>array(160,96));
-?>
+<?php
+// Tipo di font e nome
+$type = 'Core';
+$name = 'Courier-Oblique';
+
+// Parametri di posizionamento del testo
+$up = -100; // Spostamento verticale
+$ut = 50;   // Altezza del testo
+
+// Definizione della larghezza predefinita per ogni carattere (600 unità)
+$cw = [];
+for ($i = 0; $i <= 255; $i++) {
+    $cw[chr($i)] = 600;
+}
+
+// Codifica dei caratteri
+$enc = 'cp1252';
+
+// Mappa Unicode dei caratteri speciali
+$uv = [
+    0   => [0, 128],
+    128 => 8364,    // Simbolo Euro (€)
+    130 => 8218,    // Singola virgoletta bassa (‘)
+    131 => 402,     // Segno florin (ƒ)
+    132 => 8222,    // Doppia virgoletta bassa (“)
+    133 => 8230,    // Punti di sospensione (…)
+    134 => [8224, 2], // Daga († e ‡)
+    136 => 710,     // Circonflesso (ˆ)
+    137 => 8240,    // Per mille (‰)
+    138 => 352,     // S maiuscola con caron (Š)
+    139 => 8249,    // Virgoletta angolare sinistra (‹)
+    140 => 338,     // OE maiuscolo (Œ)
+    142 => 381,     // Z maiuscola con caron (Ž)
+    145 => [8216, 2], // Apostrofi singoli inclinati (‘ e ’)
+    147 => [8220, 2], // Apostrofi doppi inclinati (“ e ”)
+    149 => 8226,    // Punto elenco (•)
+    150 => [8211, 2], // Lineetta (– e —)
+    152 => 732,     // Tilde (~)
+    153 => 8482,    // Marchio registrato (™)
+    154 => 353,     // S minuscola con caron (š)
+    155 => 8250,    // Virgoletta angolare destra (›)
+    156 => 339,     // OE minuscolo (œ)
+    158 => 382,     // Z minuscola con caron (ž)
+    159 => 376,     // Y con dieresi (Ÿ)
+    160 => [160, 96], // Spazi unificati
+];
+?>
