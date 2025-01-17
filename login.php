@@ -98,7 +98,7 @@
             <h1>PTOF BUILDER</h1>
             <?php
                 echo "<a href='$loginUrl' class='login-btn'>
-                        <img src='img/login.png' alt='Login con Google' style='height: 24px; margin-right: 10px;'>
+                        <img src='img/trasferimento.png' alt='Login con Google' style='height: 24px; margin-right: 10px;'>
                         Accedi con Google
                       </a>";
             ?>

@@ -161,10 +161,8 @@ p{
 }
 
 body{
-    background-image: url('img/background.png'); /* Percorso dell'immagine di sfondo */
-    background-size: cover; /* Visualizza l'immagine di sfondo per intero senza distorsioni */
-    background-position: center; /* Centra l'immagine di sfondo */
-    background-attachment: fixed;
+    background-color: #eaf3fc !important; /* Percorso dell'immagine di sfondo */
+    
     overflow: scroll;
 }
 img{
