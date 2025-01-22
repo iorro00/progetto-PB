@@ -85,7 +85,8 @@
     <script>
         //login con google # (tolgo #da url e lo sostituisco con ?)
         var hash = window.location.hash.slice(1);
-        if (hash) {
+        if(hash) {
+            console.log(hash);
             var url = 'login.php' + '?' + hash;
             window.location.href = url;
         }
