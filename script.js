@@ -1,33 +1,40 @@
-if (window.location.href.includes('ins_visua_project.php')){
-
+if (window.location.href.includes('ins_visua_project.php')) {
     const createButt = document.getElementById('ButtIns');
     const createButt2 = document.getElementById('ButtVisua');
     const createButt3 = document.getElementById('ButtRendi');
     const createButt4 = document.getElementById('ButtAmm');
-     
-    createButt.addEventListener('click', function() {
-        setTimeout(function() {
-            window.location.href = 'dati_iniziali.php';
-        }, 400);    
-    });
-     
-    createButt2.addEventListener('click', function() {
-        setTimeout(function() {
-            window.location.href = 'visualizzazione.php';
-        }, 400);    
-    }); 
 
-    createButt3.addEventListener('click', function() {
-        setTimeout(function() {
-            window.location.href = 'rendicontazione.php';
-        }, 400);    
-    }); 
+    if (createButt) {
+        createButt.addEventListener('click', function() {
+            setTimeout(function() {
+                window.location.href = 'dati_iniziali.php';
+            }, 400);
+        });
+    }
 
-    createButt4.addEventListener('click', function() {
-        setTimeout(function() {
-            window.location.href = 'pagina_amm.php';
-        }, 400);    
-    });
+    if (createButt2) {
+        createButt2.addEventListener('click', function() {
+            setTimeout(function() {
+                window.location.href = 'visualizzazione.php';
+            }, 400);
+        });
+    }
+
+    if (createButt3) {
+        createButt3.addEventListener('click', function() {
+            setTimeout(function() {
+                window.location.href = 'rendicontazione.php';
+            }, 400);
+        });
+    }
+
+    if (createButt4) {
+        createButt4.addEventListener('click', function() {
+            setTimeout(function() {
+                window.location.href = 'pagina_amm.php';
+            }, 400);
+        });
+    }
 }
  
 function generaRisorse() {

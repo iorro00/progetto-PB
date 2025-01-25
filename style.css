@@ -160,8 +160,10 @@ p{
     text-decoration: none;
 }
 
+html{
+	background-color: white !important;
+}
 body{
-    background-color: #eaf3fc !important; /* Percorso dell'immagine di sfondo */
     
     overflow: scroll;
 }

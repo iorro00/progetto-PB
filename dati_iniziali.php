@@ -2,7 +2,6 @@
     ini_set('session.gc_maxlifetime', 7200);
     session_set_cookie_params(7200);
     session_start();
-    session_start();
     // Verifico se l'utente è loggato, altrimenti reindirizzo alla pagina di accesso
     if (!isset($_SESSION['user_email'])) {
         header("Location: login.php");
