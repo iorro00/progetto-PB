@@ -464,9 +464,9 @@ textarea::placeholder {
     align-items: center;
 }
 
-.tbVisua, #tbRendi, #tbVisuaDetails{
-	border-collapse: collapse;
-	padding: 8px;
+.tbVisua, #tbRendi, #tbVisuaDetails {
+    border-collapse: collapse;
+    padding: 8px;
     text-align: center;
     font-family: "Merriweather sans";
     color: #00245d;
@@ -475,31 +475,29 @@ textarea::placeholder {
     align-items: center;
     -webkit-border-radius: 10px;
     -webkit-border-bottom-right-radius: 0px;
-    background-color:white;
+    background-color: white;
     overflow: hidden;
-    margin-left: auto;
+    margin-left: calc(50% - 30% + 30px); /* Sposta 10px a destra dal centro */
     margin-right: auto;
     box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.5);
     margin-top: 30px;
 }
 
-#tbVisuaDetails{
-	width: 45%;
-}
+
 
 .tbVisua th,
 .tbVisua td {
-    padding: 10px;
+    padding: 8px;
 }
 
 #tbRendi th,
 #tbRendi td {
-    padding: 10px;
+    padding: 8px;
 }
 
 #tbVisuaDetails th,
 #tbVisuaDetails td {
-    padding: 10px;
+    padding: 8px;
 }
 
 .tbVisua tr:not(:last-child) th,
@@ -579,9 +577,9 @@ textarea::placeholder {
     width: 90px;
     height: 45px;
     cursor: pointer;
-    background-color: #e3e8ee;
-    border: 2px solid #00245d;
-    color: #00245d;
+    background-color: white;
+    border: 2px solid #0b5ed7;
+    color: black;
     transition-duration: 0.4s;
 }
 
@@ -591,9 +589,9 @@ textarea::placeholder {
     width: 90px;
     height: 45px;
     cursor: pointer;
-    background-color: #e3e8ee;
-    border: 2px solid #00245d;
-    color: #00245d;
+    background-color: white;
+    border: 2px solid #0b5ed7;
+    color: black;
     transition-duration: 0.4s;
     float: right;
     margin-top: 35px;
@@ -605,9 +603,9 @@ textarea::placeholder {
     width: 90px;
     height: 45px;
     cursor: pointer;
-    background-color: #e3e8ee;
-    border: 2px solid #00245d;
-    color: #00245d;
+    background-color: white;
+    border: 2px solid #0b5ed7;
+    color: black;
     transition-duration: 0.4s;
     float: right;
     margin-top: 120px;
@@ -636,8 +634,8 @@ textarea::placeholder {
     border-radius: 15px;
     cursor:pointer;
     transition-duration: 0.4s;
-    color:#00245d;
-    border: 1px solid #00245d;
+    color: black;
+    border: 1px solid #0b5ed7;
 }
 
 #butt-stampa{
@@ -649,8 +647,8 @@ textarea::placeholder {
     border-radius: 15px;
     cursor:pointer;
     transition-duration: 0.4s;
-    color:#00245d;
-    border: 1px solid #00245d;
+    color: black;
+    border: 1px solid #0b5ed7;
     margin-top: 30px;
 }
 
@@ -771,6 +769,9 @@ textarea::placeholder {
     cursor: pointer;
     color: #00245d;
 }
+#closePopup:hover{
+    color:red;
+}
 
 #subTitPopup{
 	 margin-top: 0px;
@@ -859,14 +860,14 @@ textarea::placeholder {
     filter: brightness(0) saturate(100%) invert(19%) sepia(95%) saturate(4631%) hue-rotate(349deg) brightness(104%) contrast(128%);
 }
 .extra-option{
-    height: 19px;
+    height: auto;
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
     position: absolute;
     background-color: white;
     border: 1px solid #00245d;
     border-left: none;
-    padding: 10px;
+    padding: 7.5px;
     z-index: 1000;
     display: flex;
     justify-content: center;
@@ -874,14 +875,13 @@ textarea::placeholder {
     transition-duration: 0.3s;
 }
 .extra-option-left{
-	height: 19px;
+	height: auto;
     width: 35px;
     position: absolute;
     background-color: white;
     border: 1px solid #00245d;
     border-left: none;
-    padding: 10px;
-    padding-left: 15px;
+    padding: 2.7px;
     z-index: 1000;
     display: flex;
     justify-content: center;
@@ -949,9 +949,9 @@ textarea::placeholder {
     height: 45px;
     cursor: pointer;
     border-radius: 10px;
-    background-color: #e3e8ee;
-    border: 2px solid #00245d;
-    color: #00245d;
+    background-color: white;
+    border: 2px solid #0b5ed7;
+    color: black;
     transition-duration: 0.4s;
 }
 
@@ -967,10 +967,11 @@ textarea::placeholder {
     height: 45px;
     cursor: pointer;
     border-radius: 10px;
-    background-color: #e3e8ee;
-    border: 2px solid #00245d;
-    color: #00245d;
+    background-color: white;
+    border: 2px solid #0b5ed7;
+    color: black;
     transition-duration: 0.4s;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
 }
 
 #submitModifiche:hover {
@@ -1000,6 +1001,11 @@ textarea::placeholder {
     color: #00245d;
     float: right;
     margin-top: -10px;
+}
+
+#closer:hover{
+    color:red;
+
 }
 .titMod{
 	margin-top: 20px;
@@ -1064,30 +1070,17 @@ textarea::placeholder {
     margin-right: 10px;
 }
 
-#annullaModifiche{
-    height: 45px;
-    cursor: pointer;
-    border-radius: 10px;
-    background-color: #e3e8ee;
-    border: 2px solid #00245d;
-    color: #00245d;
-    transition-duration: 0.4s;
-    display: inline-block;
-}
+
 
 #inviaModifiche:hover {
 	background-color: #00245d;
     color: white;
 }
 
-#annullaModifiche:hover {
-	background-color: #00245d;
-    color: white;
-    border-color:#00245d;
-}
+
 
 #miniTit, #miniTit2, #miniTitDoc, #miniTitClass{
-    font-size: 15px;
+    font-size: 20px;
     color: #00245d;
     font-family: "Merriweather sans";
     text-align:center;
@@ -1097,29 +1090,29 @@ textarea::placeholder {
 }
 
 #miniTit:hover {
-	font-size: 15px;
-    color: white;
+	font-size: 22px;
+    color: #00245d;
     text-decoration:underline;
     cursor: pointer;
 }
 
 #miniTit2:hover {
-	font-size: 15px;
-    color: white;
+	font-size: 22px;
+    color: #00245d;
     text-decoration:underline;
     cursor: pointer;
 }
 
 #miniTitDoc:hover {
-	font-size: 15px;
-    color: white;
+	font-size: 22px;
+    color: #00245d;
     text-decoration:underline;
     cursor: pointer;
 }
 
 #miniTitClass:hover {
-	font-size: 15px;
-    color: white;
+	font-size: 22px;
+    color: #00245d;
     text-decoration:underline;
     cursor: pointer;
 }

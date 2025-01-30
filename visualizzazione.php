@@ -14,6 +14,60 @@
         <link href='https://fonts.googleapis.com/css?family=Merriweather Sans' rel='stylesheet'>
         <link href="style.css" rel="stylesheet" type="text/css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <style>
+            #title {
+                font-family: 'Playfair Display', serif;
+                font-size: 1.5rem;
+                color: #2c3e50;
+                font-weight: 700;
+                margin-bottom: 30px;
+                letter-spacing: -0.5px;
+            }
+            .top-bar {
+                background-color: #00245d;
+                color: white;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 80px;
+                z-index: 1000;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            .top-bar button {
+                font-size: 1.8rem; /* Testo del pulsante più grande */
+                background: none;
+                border: none;
+                color: white;
+                cursor: pointer;
+            }
+
+            .top-bar #butt-filtri {
+                font-size: 1.8rem; /* Testo del pulsante più grande */
+                background: none;
+                border: none;
+                color: white;
+                margin-left: auto;
+            }
+            #butt-filtri:hover {
+                color: #007bff;
+            }
+            
+            .top-bar p {
+                font-size: 1.5rem;
+                font-weight: bold;
+                margin: 0;
+                text-align: center;
+                flex-grow: 1;
+            }
+
+            
+        </style>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 var rows = document.querySelectorAll('#firstTb tr');
@@ -32,16 +86,12 @@
         </script>
     </head>
 <body>
-	<div id="box3">
-        <img id="logo" src="img/logo.png" alt="Immagine non trovata">
-        <h1><a id='pb-link' href='ins_visua_project.php'>PB</a></h1>
+    <div id="top-bar" class="top-bar d-flex align-items-center p-3" style="display: none;">
+            <button id="back-btn" class="btn btn-light me-3" onclick="torna()">←</button>
+            <p id="title" class="m-0 mx-auto text-white">ELENCO PROGETTI IIS BLAISE PASCAL</p>
+            <button id="butt-filtri" >Filtri</button>
     </div>
-
-
-    <div class="header-container">
-        <p>Elenco progetti IIS Blaise Pascal</p>
-        <button id="butt-filtri" >Filtri</button>
-    </div>
+    <br><br><br>
 
     <?php
         require_once("db.php");
@@ -140,6 +190,7 @@
         <div class="boxFiltri-content">
             <span id="closePopup">&times;</span>
             <div id="colonnaBis">
+                <br><br><br>
                 <p>Classi coinvolte</p>
 
                 <div id="indirizzo">
@@ -209,7 +260,7 @@
     
     <button id="butt-stampa" >Stampa</button>
 
-    <p id='exit-link'><b><a id='exit-link' href='ins_visua_project.php'>Ritorna alla home</a></b></p>
+    <br>
 </body>
 <script> 
     const openPopupButton = document.getElementById('butt-filtri');
@@ -319,6 +370,10 @@ function evento(id){
         popup.style.display='none'; //quando schiacchio invio, il popup si chiude
         enableScroll();
     }   
+
+    function torna(){
+        window.location.href = "ins_visua_project.php";
+    }
             
 </script>
 <script  src="script.js"></script>

@@ -14,12 +14,57 @@
         <link href='https://fonts.googleapis.com/css?family=Merriweather Sans' rel='stylesheet'>
         <link href="style.css" rel="stylesheet" type="text/css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+        <style>
+            #title {
+                font-family: 'Playfair Display', serif;
+                font-size: 1.5rem;
+                color: #2c3e50;
+                font-weight: 700;
+                margin-bottom: 30px;
+                letter-spacing: -0.5px;
+            }
+            .top-bar {
+                background-color: #00245d;
+                color: white;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 80px;
+                z-index: 1000;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            .top-bar button {
+                font-size: 1.8rem; /* Testo del pulsante più grande */
+                background: none;
+                border: none;
+                color: white;
+                cursor: pointer;
+            }
+            
+            .top-bar p {
+                font-size: 1.5rem;
+                font-weight: bold;
+                margin: 0;
+                text-align: center;
+                flex-grow: 1;
+            }
+
+            .top-bar .logo {
+                width: 60px; /* Logo più grande */
+                height: 50px;
+                
+                object-fit: cover;
+                margin-left: auto; /* Sposta il logo sulla destra */
+            }
+        </style>
     </head>
 <body>
-	<div id="box3">
-        <img id="logo" src="img/logo.png" alt="Immagine non trovata">
-        <h1><a id='pb-link' href='ins_visua_project.php'>PB</a></h1>
-    </div>
+	
     <?php
     require_once("db.php");
         if(isset($_POST['id']) && !empty($_POST['id'])) {
@@ -40,8 +85,12 @@
         
         // Stampiamo dinamicamente tutti gli attributi del progetto
         foreach($project as $value) {
-        	echo "<p id='titVisua' get-id='".$projectId."'><b>Modifica  ". $value["titolo"]."</b></p>";
-            
+            echo "<div class='top-bar d-flex align-items-center p-3'>";
+            echo "<button class='btn btn-light me-3' id='annullaModifiche'>←</button>";
+            echo "<p class='m-0 mx-auto text-white' id='title' data-id='".$projectId."'><b>Modifica  ". $value["titolo"]."</b></p>";
+            echo "<img src='img/logo.png' alt='Logo' class='logo'>";
+            echo "</div>";
+            echo "<br><br><br><br>";
             
             $tabGenerale .= "<th>Titolo:</th><td class='mod_campo' id='titolo'>". $value["titolo"]."</td></tr>";
             $stmRef = $conn->prepare("SELECT nominativo FROM docenteReferente WHERE id =". $value["fk_docenteReferente"]);
@@ -70,7 +119,7 @@
             $tabAspettiDid .= "<th>Luoghi di svolgimento:</th><td class='mod_campo' id='luoghi'>".$value["luoghi_svolgimento"]."</td></tr>";
             $tabAspettiDid .= "<th>Modalità di verifica in itinere e finale:</th><td class='mod_campo' id='finale'>".$value["verifica_itinere_e_finale"]."</td></tr>";
             $tabAspettiDid .= "<th>Documentazione:</th><td class='mod_campo' id='docum'>".$value["documentazione"]."</td></tr>";
-          
+            
             $stmClassi = $conn->prepare("SELECT c.anno_classe, c.sezione FROM progetti_classi p, classi c WHERE p.fk_progetto =".$value["id"]." AND p.fk_classe = c.id");
         	$stmClassi->execute();
         	$classi = $stmClassi->fetchAll();
@@ -96,7 +145,6 @@
                 $orePom = $cla["ore_pomeriggio"];
             }
             $tabDestinatari .="<tr><th>Ore mattina:</th><td class='mod_campo' id='oreMatt'>".$oreMatt."</td></tr><tr><th>Ore pomeriggio:</th><td class='mod_campo' id='orePom'>".$orePom."</td></tr>";
-            
             $stmComp = $conn->prepare("SELECT c.descrizione FROM progetti_competenze p, competenze c WHERE p.fk_progetti =".$value["id"]." AND p.fk_competenze = c.id");
         	$stmComp->execute();
         	$competenze = $stmComp->fetchAll();
@@ -137,26 +185,30 @@
         echo "<p class='subTit'>Informazioni generali</p>";
         $tabGenerale .= "</tr></table>";
         echo $tabGenerale;
-        
+
+        echo "<br>";
         echo "<p class='subTit'>Riferimenti al PTOF</p>";
         $tabRiferimenti .= "</tr></table>";
         echo $tabRiferimenti;
-        
+
+        echo "<br>";
         echo "<p class='subTit'>Aspetti didattici</p>";
         $tabAspettiDid .= "</tr></table>";
         echo $tabAspettiDid;
-        
+        echo "<br>";
+
         echo "<p class='subTit'>Destinatari del progetto</p>";
         
         $tabDestinatari .= "</table>";
         echo $tabDestinatari;
-        
+
+        echo "<br>";
         if($contaComp > 0){
           echo "<p class='subTit'>Competenze progetto</p>";
           $tabCompetenze .= "</tr></table>";
           echo $tabCompetenze;
         }
-        
+        echo "<br>";
         echo "<div id='contTit'><p class='subTit'>Risorse interne</p> <p id='miniTit'>Aggiungi risorsa</p></div>";
         $tabRisorseInt .= "</table>";
         echo $tabRisorseInt;
@@ -204,12 +256,10 @@
           </div>
     </div>
     
-    <div id="conButt">
-    <input type="button" value="Torna alla rendicontazione" id="annullaModifiche">
-    </div>
+    <br>
 </body>
 <script>
-var element = document.getElementById('titVisua');
+var element = document.getElementById('title');
 var idProgetto = element.getAttribute('get-id');
 var modal = document.getElementById("confermaElim");
 var modal2 = document.getElementById("confermaElim2");
@@ -346,7 +396,7 @@ $('#classi').on('click', function(){
     disableScroll();
     $('.modifica-campo-classi-content').empty(); // Pulisci il contenuto precedente
     const tbSceltaClassi = `
-<div id="indirizzo2">
+<div id="indirizzo2" >
     <p class="subTit">Indirizzo</p>
     <div class="content">
         <table>
@@ -369,6 +419,7 @@ $('#classi').on('click', function(){
         </table>
     </div>
 </div>
+<br>
 
 <div id="annata2">
     <p class="subTit">Annata</p>
@@ -397,10 +448,13 @@ $('#classi').on('click', function(){
         </table>
     </div>
 </div>
+<br>
 <p class="subTit">Classi filtrate</p>
     <div id="classi-selezionate" class='tbClassi'>
     	
     </div>
+    <br>
+
     <p id="selectAll" onclick="selezionaCheckbox()" >Seleziona tutti</p>
     <p id="deselectAll" onclick="deselezionaCheckbox()" style="display:none" >Deseleziona tutti</p>
 

@@ -23,13 +23,16 @@
         }
     }
 
+    // Modifica: Aggiunto il parametro 'prompt=consent' per forzare il login
     $loginUrl = 'https://accounts.google.com/o/oauth2/auth?' . http_build_query([
         'response_type' => 'token',
         'client_id' => '529378518049-94dm7aej1qsjtu84natojb905i23h38e.apps.googleusercontent.com',
         'redirect_uri' => 'https://ptofbuilder.altervista.org/login.php',
         'scope' => 'email',
+        'prompt' => 'consent' // Forza la richiesta di login
     ]);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="it">

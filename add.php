@@ -1,5 +1,7 @@
 <?php
     session_start();
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
 
 	$titolo = $_POST["title"];
     $dipart = $_POST["dip"];
@@ -17,14 +19,14 @@
     $luoghi = $_POST["luog"];
     $verifica = $_POST["verifica"];
     $documentazione = $_POST["document"];
-    if(isset($_POST["progettazione_potenziamento"]))$progettazione_potenziamento = $_POST["progettazione_potenziamento"];
-    if(isset($_POST["docenza_potenziamento"]))$docenza_potenziamento = $_POST["docenza_potenziamento"];
-    if(isset($_POST["progettazione_pcto"]))$progettazione_pcto = $_POST["progettazione_pcto"];
-    if(isset($_POST["docenza_pcto"]))$docenza_pcto = $_POST["docenza_pcto"];
-    if(isset($_POST["progettazione_interno"]))$progettazione_interno = $_POST["progettazione_interno"];
-    if(isset($_POST["docenza_interno"]))$docenza_interno = $_POST["docenza_interno"];
-    if(isset($_POST["progettazione_esterno"]))$progettazione_esterno = $_POST["progettazione_esterno"];
-    if(isset($_POST["docenza_esterno"]))$docenza_esterno = $_POST["docenza_esterno"];
+    $progettazione_potenziamento = isset($_POST["progettazione_potenziamento"]) ? $_POST["progettazione_potenziamento"] : "";
+    $docenza_potenziamento = isset($_POST["docenza_potenziamento"]) ? $_POST["docenza_potenziamento"] : "";
+    $progettazione_pcto = isset($_POST["progettazione_pcto"]) ? $_POST["progettazione_pcto"] : "";
+    $docenza_pcto = isset($_POST["docenza_pcto"]) ? $_POST["docenza_pcto"] : "";
+    $progettazione_interno = isset($_POST["progettazione_interno"]) ? $_POST["progettazione_interno"] : "";
+    $docenza_interno = isset($_POST["docenza_interno"]) ? $_POST["docenza_interno"] : "";
+    $progettazione_esterno = isset($_POST["progettazione_esterno"]) ? $_POST["progettazione_esterno"] : "";
+    $docenza_esterno = isset($_POST["docenza_esterno"]) ? $_POST["docenza_esterno"] : "";
 
 	$data = array(
     "Docente potenziamentoP" => $progettazione_potenziamento,
@@ -43,14 +45,9 @@
 
     
     $comp = array();
-    $comp['comp1']=$_POST["comp1"];
-    $comp['comp2']=$_POST["comp2"];
-    $comp['comp3']=$_POST["comp3"];
-    $comp['comp4']=$_POST["comp4"];
-    $comp['comp5']=$_POST["comp5"];
-    $comp['comp6']=$_POST["comp6"];
-    $comp['comp7']=$_POST["comp7"];
-    $comp['comp8']=$_POST["comp8"];
+    for ($i = 1; $i <= 8; $i++) {
+        $comp["comp$i"] = isset($_POST["comp$i"]) ? $_POST["comp$i"] : null;
+    }
     
     
     $classiSelezionate = array();
@@ -68,12 +65,16 @@
     
     
     require_once("db.php");
-    $stm0 = $conn->prepare("SELECT id FROM docenteReferente WHERE nominativo = '".$_SESSION["nominativo"]."'");
-    $stm0->execute();
-    $idDoc = $stm0->fetchAll();
-    foreach($idDoc as $row0) {
-    	$res = $row0["id"];
+    $stm0 = $conn->prepare("SELECT id FROM docenteReferente WHERE nominativo = ?");
+    $stm0->execute([$_SESSION["nominativo"]]);
+    $idDoc = $stm0->fetch(PDO::FETCH_ASSOC);
+    
+    if (!$idDoc) {
+        die("Errore: Nessun docenteReferente trovato per questo nominativo.");
     }
+    
+    $res = $idDoc["id"];
+    
     $stm = $conn->prepare("INSERT INTO progetti(titolo,fk_dipartimento,strutturale,orientamento,PCTO,origineProgetto,analisi_contesto,obbiettivi_attesi,attivita_previste,metodologia_e_strumenti,tempi_svolgimento, luoghi_svolgimento,verifica_itinere_e_finale,documentazione,fk_docenteReferente) VALUES ('".$titolo."',".$dipart.",'".$strutt."','".$orient."','".$percorsi."','".$origine."','".$contesto."','".$obiettivi."','".$attivita."','".$metodi."','".$mesiSelezionati."','".$luoghi."','".$verifica."','".$documentazione."',".$res.")");
     if($stm->execute()){
 	  $id = $conn->lastInsertId();

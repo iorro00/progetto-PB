@@ -73,7 +73,7 @@
             letter-spacing: -0.5px;
         }
         .btn-custom {
-            background-color: #0d6efd;
+            background-color: #00245d;
             color: white;
             border: none;
             margin: 12px 0;

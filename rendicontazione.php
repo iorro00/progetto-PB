@@ -18,22 +18,77 @@
         <link href='https://fonts.googleapis.com/css?family=Merriweather Sans' rel='stylesheet'>
         <link href="style.css" rel="stylesheet" type="text/css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <style>
+            #title {
+                font-family: 'Playfair Display', serif;
+                font-size: 1.5rem;
+                color: #2c3e50;
+                font-weight: 700;
+                margin-bottom: 30px;
+                letter-spacing: -0.5px;
+            }
+            .top-bar {
+                background-color: #00245d;
+                color: white;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 80px;
+                z-index: 1000;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            .top-bar button {
+                font-size: 1.8rem; /* Testo del pulsante più grande */
+                background: none;
+                border: none;
+                color: white;
+                cursor: pointer;
+            }
+            .top-bar #butt-filtri {
+                font-size: 1.8rem; /* Testo del pulsante più grande */
+                background: none;
+                border: none;
+                color: white;
+                margin-left: auto;
+            }
+            #butt-filtri:hover {
+                color: #007bff;
+            }
+            .top-bar p {
+                font-size: 1.5rem;
+                font-weight: bold;
+                margin: 0;
+                text-align: center;
+                flex-grow: 1;
+            }
+        </style>
     </head>
-
     <body>
-        <div id="box3">
-            <img id="logo" src="img/logo.png" alt="Immagine non trovata">
-            <h1><a id='pb-link' href='ins_visua_project.php'>PB</a></h1>
-        </div>
-    
-    <div class="header-container">
-        <p>Rendicontazione progetti IIS Blaise Pascal</p>
-        <button id="butt-filtri" >Filtri</button>
-	</div>
+    <div id="top-bar" class="top-bar d-flex align-items-center p-3">
+        <button id="back-btn" class="btn btn-light me-3" onclick="tornaIndietroJS()">←</button>
+        <p id="title" class="m-0 mx-auto text-white">RENDICONTAZIONE PROGETTI IIS BLAISE PASCAL</p>
+        <button id="butt-filtri">Filtri</button>
+    </div>
+       <br><br><br><br> 
+        
+    </div>
         <?php
-            require_once("db.php");
+            require_once 'db.php';
 
+            // PHP function removed because we're now using JavaScript for redirection.
+        ?>
+        <script>
+        function tornaIndietroJS(){
+            window.location.href = "<?php echo ($_SESSION['nominativo'] === 'Amministratore') ? 'pagina_amm.php' : 'ins_visua_project.php'; ?>";
+        }
+        </script>
+        <?php
             $table = "<table id='tbRendi'>
                         <tr>
                         	<th style= display:none;></th>
@@ -99,7 +154,9 @@
         <div id="boxFiltri" style="display:none;">
         <div class="boxFiltri-content">
             <span id="closePopup">&times;</span>
+            <br>
             <div id="colonnaBis">
+                <br><br><br>
                 <p>Classi coinvolte</p>
 
                 <div id="indirizzo">
@@ -176,13 +233,7 @@
 		</form>
 
     
-        <?php
-            //Se è l'amministratore lo reindirizzo alla sua pagina, se è un utente normale allora alla home del sito
-            if($_SESSION["nominativo"] == "Amministratore"){
-                echo "<p id='exit-link'><b><a id='exit-link' href='pagina_amm.php'>Ritorna alla home</a></b></p>";
-            }
-            else echo "<p id='exit-link'><b><a id='exit-link' href='ins_visua_project.php'>Ritorna alla home</a></b></p>";
-        ?>    
+         
     </body>
     
     <script>
@@ -195,6 +246,7 @@
     var modal = document.getElementById("confermaElim");
     var confirmButton = document.getElementById("confirmButton");
     var cancelButton = document.getElementById("cancelButton");
+
 
     rows.forEach(function(row) {
         // Seleziona tutte le celle td tranne le ultime due in ogni riga
