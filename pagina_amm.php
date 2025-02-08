@@ -425,7 +425,7 @@ $('#miniTitDoc').on('click', function(){
     $('#aggiungi').show();
     disableScroll();
     $('.aggiungi-content').empty(); // Pulisci il contenuto precedente
-    $('.aggiungi-content').append('<span id="closer">&times;</span><p class="addDoc">Aggiungi docente</p> <input type="text" id="newNomin" name="newNomin"><input type="button" value="Salva" id="submitModifiche" onclick="addDoc();">');
+    $('.aggiungi-content').append('<span id="closer">&times;</span><p class="addDoc">Aggiungi docente</p> <input type="text" id="newNomin" name="newNomin" placeholder="forma: COGNOME NOME"><input type="button" value="Salva" id="submitModifiche" onclick="addDoc();">');
 });
 
 $('#miniTitClass').on('click', function(){

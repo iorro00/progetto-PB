@@ -14,15 +14,15 @@
 <html>
     <head>
         <title>Visualizzazione</title>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Orbitron">
-        <link href='https://fonts.googleapis.com/css?family=Merriweather Sans' rel='stylesheet'>
-        <link href="style.css" rel="stylesheet" type="text/css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     </head>
 <body>
-	<div id="box3">
-        <img id="logo" src="img/logo.png" alt="Immagine non trovata">
-        <h1><a id='pb-link' href='ins_visua_project.php'>PB</a></h1>
-    </div>
+
     <?php
     require_once("db.php");
     
@@ -44,8 +44,12 @@
         
         // Stampiamo dinamicamente tutti gli attributi del progetto
         foreach($project as $value) {
-        	echo "<p id='titVisua'><b>Progetto ". $value["titolo"]."</b></p>";
-            
+            echo "<div id='top-bar' class='top-bar d-flex align-items-center p-3'>";
+            echo "<button id='back-btn' class='btn btn-light me-3' onclick='tornaIndietro()'>←</button>";
+            echo "<p id='page-title' class='m-0 mx-auto text-white'>PROGETTO ". $value["titolo"]."</p>";
+            echo "<img src='img/logo.png' alt='Logo' class='logo'>";
+            echo "</div>";
+            echo "<br><br><br><br>";
             
             
             $stmRef = $conn->prepare("SELECT nominativo FROM docenteReferente WHERE id =". $value["fk_docenteReferente"]);
@@ -168,6 +172,12 @@
         echo "<p>Progetto non trovato.</p>";
     }
 ?>    
-    <p id='exit-link'><b><a id='exit-link' href='ins_visua_project.php'>Ritorna alla home</a></b></p>
+
+<br><br>
 </body>
+<script>
+function tornaIndietro() {
+        window.location.href = "visualizzazione.php";
+    }
+    </script>
 </html>

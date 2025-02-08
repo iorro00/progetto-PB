@@ -65,32 +65,55 @@ event.preventDefault();
 
  
 function generaRisorseExt() {
-            // Ottieni il numero di risorse dall'input
-            var numRisorseExt = parseInt(document.getElementById('numRisorseExt').value);
+    // Ottieni il numero di risorse dall'input
+    var numRisorseExt = parseInt(document.getElementById('numRisorseExt').value);
 
-            // Genera i form dinamicamente
-            var risExt = document.getElementById('risorseExt');
-            risExt.innerHTML = ''; // Pulisci il contenuto precedente
+    // Seleziona il contenitore delle risorse esterne
+    var risExt = document.getElementById('risorseExt');
+    risExt.innerHTML = ''; // Pulisci il contenuto precedente
 
-            for (var i = 0; i < numRisorseExt; i++) {
-                var formHtml = `
-                        <p>Risorsa esterna ${i + 1}</p>
-                        <label for="risorseExt${i}nome">Nome Docente${i + 1}:</label>
-                        <input type="text" id="risorseExt${i}nome" name="risorseExt${i}nome">
-
-                        <label for="risorseExt${i}ore">Numero Ore di docenza:</label>
-                        <input type="number" id="risorseExt${i}ore" name="risorseExt${i}ore" min="1" value="1"> 
+    for (var i = 0; i < numRisorseExt; i++) {
+        var formHtml = `
+            <div class="card mt-4 shadow-sm">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0 fw-bold">Risorsa esterna ${i + 1}</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
                         
-                        <label for="risorseExt${i}ore">Costo Previsto (Euro):</label>
-                        <input type="number" id="risorseExt${i}costo" name="risorseExt${i}costo" min="1" value="1">
-                        
-                        <label for="risorseExt${i}ore">Eventuali Costi Aggiuntivi:</label>
-                        <textarea id="risorseExt${i}eventualicosti" name="risorseExt${i}eventualicosti" ></textarea>
-                        `;
-                risExt.innerHTML += formHtml;
-            }
-            event.preventDefault();
+                        <!-- Nome Docente -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold" for="risorseExt${i}nome">Nome Docente ${i + 1}:</label>
+                            <input type="text" class="form-control" id="risorseExt${i}nome" name="risorseExt${i}nome">
+                        </div>
+
+                        <!-- Numero Ore di Docenza -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold" for="risorseExt${i}ore">Numero Ore di Docenza:</label>
+                            <input type="number" class="form-control" id="risorseExt${i}ore" name="risorseExt${i}ore" min="1" value="1">
+                        </div>
+
+                        <!-- Costo Previsto -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold" for="risorseExt${i}costo">Costo Previsto (Euro):</label>
+                            <input type="number" class="form-control" id="risorseExt${i}costo" name="risorseExt${i}costo" min="1" value="1">
+                        </div>
+
+                        <!-- Eventuali Costi Aggiuntivi -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold" for="risorseExt${i}eventualicosti">Eventuali Costi Aggiuntivi:</label>
+                            <textarea class="form-control" id="risorseExt${i}eventualicosti" name="risorseExt${i}eventualicosti"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        risExt.innerHTML += formHtml;
+    }
+    event.preventDefault();
 }
+
  
     let checkedCount = 0;
 
@@ -435,7 +458,7 @@ function logout() {
 
     // Funzione per reindirizzare dopo il logout da Google
     var redirectAfterLogout = function() {
-        window.location.href = 'logout.php';
+        window.location.href = 'login.php';
     };
 
     // Creare un iframe per eseguire il logout di Google

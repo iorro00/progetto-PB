@@ -161,10 +161,10 @@ p{
 }
 
 html{
-	background-color: white !important;
+	background-color: #f8f9fa !important;
 }
 body{
-    
+    background-color: #f8f9fa !important;
     overflow: scroll;
 }
 img{
@@ -220,9 +220,6 @@ input[type="checkbox"] {
     appearance: none; /* Nasconde lo stile predefinito del browser */
     -webkit-appearance: none;
     -moz-appearance: none;
-    width: 20px; /* Dimensioni della checkbox */
-    height: 20px;
-    border: 2px solid #00245d; /* Bordo della checkbox */
     border-radius: 4px; /* Angoli arrotondati */
     outline: none; /* Rimuove il contorno */
     cursor: pointer; /* Mostra il cursore come puntatore */
@@ -344,7 +341,16 @@ input:focus {
     margin: 10px;
     background-color: white;
     border-radius: 40px;
+    border: 1px solid #007bff;
+    color:black;
 }
+
+#avanti:hover,#indietro:hover{
+    background-color: #00245d;
+    color: white;
+}
+
+
 
 #reset{
     padding: -1px 20px;
@@ -595,6 +601,49 @@ textarea::placeholder {
     transition-duration: 0.4s;
     float: right;
     margin-top: 35px;
+}
+#page-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem;
+    color: #2c3e50;
+    font-weight: 700;
+    margin-bottom: 30px;
+    letter-spacing: -0.5px;
+}
+.top-bar {
+background-color: #00245d;
+color: white;
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 80px; /* Altezza aumentata */
+z-index: 1000;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.top-bar button {
+font-size: 1.8rem; /* Testo del pulsante più grande */
+background: none;
+border: none;
+color: white;
+cursor: pointer;
+}
+
+.top-bar .logo {
+width: 60px; /* Logo più grande */
+height: 50px;
+
+object-fit: cover;
+margin-left: auto; /* Sposta il logo sulla destra */
+}
+
+.top-bar p {
+font-size: 1.5rem; /* Testo del titolo più grande */
+font-weight: bold;
+margin: 0;
+text-align: center;
+flex-grow: 1;
 }
 
 #submit3{
@@ -1118,7 +1167,6 @@ textarea::placeholder {
 }
 
 #contTit{
-	display: ruby-text;
     text-align: center;
     margin: auto;
 }

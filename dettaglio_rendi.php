@@ -2,7 +2,6 @@
     ini_set('session.gc_maxlifetime', 7200);
     session_set_cookie_params(7200);
     session_start();
-    session_start();
     
     // Verifico se l'utente è loggato, altrimenti reindirizzo alla pagina di accesso
     if (!isset($_SESSION['user_email'])) {
@@ -14,23 +13,22 @@
 <html>
     <head>
         <title>Rendicontazione</title>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Orbitron">
-        <link href='https://fonts.googleapis.com/css?family=Merriweather Sans' rel='stylesheet'>
-        <link href="style.css" rel="stylesheet" type="text/css">
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     </head>
 <body>
-	<div id="box3">
-        <img id="logo" src="img/logo.png" alt="Immagine non trovata">
-        <h1><a id='pb-link' href='ins_visua_project.php'>PB</a></h1>
-    </div>
+	
     <?php
     require_once("db.php");
-    
-    if(isset($_POST['id']) || !empty($_POST['id'])) {
-        $projectId = $_POST['id'];
+    $projectId = isset($_POST['id']) ? $_POST['id'] : (isset($_GET['id']) ? $_GET['id'] : null);
+        if ($projectId) {
         echo "<p style=display:none id='get-id2' data-id='".$projectId."'></p>";
-    
+
+
         // Esegui la query per recuperare i dettagli del progetto utilizzando l'ID
         $stm = $conn->prepare("SELECT * FROM progetti WHERE id =". $projectId);
         $stm->execute();
@@ -46,7 +44,12 @@
         
         // Stampiamo dinamicamente tutti gli attributi del progetto
         foreach($project as $value) {
-        	echo "<p id='titVisua'><b>Progetto ". $value["titolo"]."</b></p>";
+        	echo "<div id='top-bar' class='top-bar d-flex align-items-center p-3'>";
+            echo "<button id='back-btn' class='btn btn-light me-3' onclick='tornaIndietro()'>←</button>";
+            echo "<p id='page-title' class='m-0 mx-auto text-white'>PROGETTO ". $value["titolo"]."</p>";
+            echo "<img src='img/logo.png' alt='Logo' class='logo'>";
+            echo "</div>";
+            echo "<br><br><br><br>";
             
             
             
@@ -179,7 +182,7 @@
               	<div id="contenuto"></div>
         	</div>
     </div>
-    <p id='exit-link'><b><a id='exit-link' href='ins_visua_project.php'>Ritorna alla home</a></b></p>
+    <br><br>
 </body>
   <script>
   	const openPopupButton = document.getElementById('insOreEff');
@@ -225,8 +228,9 @@ document.querySelectorAll('.get-id-ext').forEach(span => {
           const dataIdExt = this.getAttribute('data-id-ext');
           var mess="ext";
           
-		  var element = document.getElementById('get-id2');
-		  var projectId = element.dataset.id; 
+		  var element = document.getElementById('get-id2');  
+            var projectId = element ? element.dataset.id : null;
+            console.log("ID Progetto:", projectId);
           setTimeout(function() {
     		 popup.style.display="inline-block"; 
 		  }, 125);
@@ -337,5 +341,9 @@ function addPopupEventListenersExt() {
           location.reload();
           document.getElementById("contenuto").innerHTML = " ";
 }
+
+function tornaIndietro() {
+        window.location.href = "ins_visua_project.php";
+    }
   </script>
 </html>

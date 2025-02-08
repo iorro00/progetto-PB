@@ -212,7 +212,7 @@
         echo "<div id='contTit'><p class='subTit'>Risorse interne</p> <p id='miniTit'>Aggiungi risorsa</p></div>";
         $tabRisorseInt .= "</table>";
         echo $tabRisorseInt;
-        
+        echo "<br>";
         echo "<div id='contTit'><p class='subTit'>Risorse esterne</p> <p id='miniTit2'>Aggiungi risorsa</p></div>";
         $tabRisorseExt .= "</table>";
         echo $tabRisorseExt;
@@ -260,7 +260,7 @@
 </body>
 <script>
 var element = document.getElementById('title');
-var idProgetto = element.getAttribute('get-id');
+var idProgetto = element.getAttribute('data-id'); // Legge l'attributo corretto
 var modal = document.getElementById("confermaElim");
 var modal2 = document.getElementById("confermaElim2");
 var confirmButton = document.getElementById("confirmButton");
@@ -268,14 +268,14 @@ var confirmButton2 = document.getElementById("confirmButton2");
 var cancelButton = document.getElementById("cancelButton");
 var prendiId;
 
-$('#titolo').on('click', function(){
+$(document).on('click', '#titolo', function(){
     $('#modifica-campo').show();
     disableScroll();
     $('.modifica-campo-content').empty(); // Pulisci il contenuto precedente
     $('.modifica-campo-content').append('<span id="closer">&times;</span><p class="titMod">Modifica il titolo</p> <input type="text" id="newTitolo" name="newTitolo"><input type="button" value="Salva" id="submitModifiche" onclick="prendiTitolo();">');
 });
 
-$('#docRef').on('click', function(){
+$(document).on('click', '#docRef', function(){
     $('#modifica-campo').show();
     $('.modifica-campo-content').empty(); // Pulisci il contenuto precedente
     disableScroll();
@@ -297,7 +297,7 @@ $('#docRef').on('click', function(){
     });
 });
 
-$('#dip').on('click', function(){
+$(document).on('click', '#dip', function(){
     $('#modifica-campo').show();
     disableScroll();
     $('.modifica-campo-content').empty(); // Pulisci il contenuto precedente
@@ -355,8 +355,8 @@ $('#tempi').on('click', function(){
 
 $('#comp1, #comp2').on('click', function(){
 	var id = $(this).attr('id');
-    var elemento = document.querySelector("[get-id]");
-    var idProgetto = elemento.getAttribute("get-id");
+    var elemento = document.querySelector("#title");
+    var idProgetto = elemento.getAttribute("data-id");
     $('#modifica-campo').show();
     disableScroll();
     $('.modifica-campo-content').empty(); // Pulisci il contenuto precedente
@@ -551,34 +551,35 @@ $('.costiEventualiRisorsaExt').on('click', function(){
     $('.modifica-campo-content').append('<span id="closer">&times;</span><p class="titMod">Modifica costo previsto risorsa esterna</p> <textarea name="newCostiEventualiRisExt" id="newCostiEventualiRisExt" placeholder="Scrivi qui..."></textarea> <input type="button" value="Salva" id="submitModifiche" onclick="prendiCostiEventualiRisExt(\'' + idRis + '\', \'' + idCell + '\');">');
 });
 
-function prendiTitolo(){
-	var newTitolo = $('#newTitolo').val();
+function prendiTitolo() {
+    var newTitolo = $('#newTitolo').val();
     if (newTitolo.trim()) {
-    	
-     	jQuery.ajax({
-          type: 'POST',
-          url: "upd_titolo.php",
-          dataType: 'json',
-          data: {
-            'id': idProgetto,
-            'titolo': newTitolo,
-          },
-          success: function(response) {                        
-              if (response.success) {
-                  // Prendi solo la risposta e assegnala a una variabile
-                  var risposta = response.risposta;
-                  console.log(risposta);
-                  location.reload();
-              } else {
-                  console.error("Errore: " + response.message);
-              }
-          }
-    	});
-	} 
-    enableScroll()
-	$('#modifica-campo').hide();
-
+        jQuery.ajax({
+            type: 'POST',
+            url: "upd_titolo.php",
+            dataType: 'json',
+            data: {
+                'id': idProgetto, // Assicurati che idProgetto sia definito
+                'titolo': newTitolo,
+            },
+            success: function(response) {                        
+                console.log("Risposta AJAX:", response);
+                if (response.success) {
+                    console.log("Titolo aggiornato con successo:", response.risposta);
+                    location.reload(); // Ricarica la pagina per vedere il cambiamento
+                } else {
+                    console.error("Errore: " + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Errore AJAX:", error);
+            }
+        });
+    } 
+    enableScroll();
+    $('#modifica-campo').hide();
 }
+
 
 function prendiDocRef(){
 var newDocRef = $('#doc').val();
