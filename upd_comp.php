@@ -1,43 +1,47 @@
 <?php
 require_once("db.php");
 
-$idPrj = $_POST["id"];
-$competenza = $_POST["comp"];
-$flag = $_POST["flag"];
+if (isset($_POST['id']) && isset($_POST['comp']) && isset($_POST['flag'])) {
+    $projectId = $_POST['id'];
+    $newComp = $_POST['comp'];
+    $flag = $_POST['flag'];
+    $compExist = isset($_POST['compExist']) ? $_POST['compExist'] : null;
 
-if($flag===true){
-	$secondaComp = $_POST["compExist"];
-    
-    $stmtNumComp = $conn->prepare("SELECT id FROM competenze WHERE descrizione = '".$competenza."'");
-    $stmtNumComp->execute();
-    $result = $stmtNumComp->fetchAll();
-    foreach($result as $row)$comp1=$row["id"];
-    
-    $stmtScComp = $conn->prepare("SELECT id FROM competenze WHERE descrizione = '".$secondaComp."'");
-    $stmtScComp->execute();
-    $result2 = $stmtScComp->fetchAll();
-    foreach($result2 as $row2)$comp2=$row2["id"];
-    
-    $stmtComp = $conn->prepare("UPDATE progetti_competenze
-                               SET fk_competenze =".$comp1."
-                               WHERE fk_progetti=".$idPrj."
-                               AND fk_competenze !=".$comp2);
-    $stmtComp->execute();
+    try {
+        if ($compExist) {
+            // Se esiste una competenza, aggiorna quella esistente
+            $stmt = $conn->prepare("UPDATE competenze SET descrizione = :newComp WHERE descrizione = :compExist AND id IN (SELECT fk_competenze FROM progetti_competenze WHERE fk_progetti = :projectId)");
+            $stmt->bindParam(':newComp', $newComp);
+            $stmt->bindParam(':compExist', $compExist);
+            $stmt->bindParam(':projectId', $projectId);
+        } else {
+            // Controlla se la competenza esiste già
+            $stmt = $conn->prepare("SELECT id FROM competenze WHERE descrizione = :newComp");
+            $stmt->bindParam(':newComp', $newComp);
+            $stmt->execute();
+            $existingComp = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($existingComp) {
+                $newCompId = $existingComp['id'];
+            } else {
+                // Se non esiste una competenza, aggiungi una nuova
+                $stmt = $conn->prepare("INSERT INTO competenze (descrizione) VALUES (:newComp)");
+                $stmt->bindParam(':newComp', $newComp);
+                $stmt->execute();
+                $newCompId = $conn->lastInsertId();
+            }
+
+            $stmt = $conn->prepare("INSERT INTO progetti_competenze (fk_progetti, fk_competenze) VALUES (:projectId, :newCompId)");
+            $stmt->bindParam(':projectId', $projectId);
+            $stmt->bindParam(':newCompId', $newCompId);
+        }
+
+        $stmt->execute();
+        echo json_encode(['success' => true, 'message' => 'Competenza aggiornata con successo']);
+    } catch (PDOException $e) {
+        echo json_encode(['success' => false, 'message' => 'Errore durante l\'aggiornamento della competenza: ' . $e->getMessage()]);
+    }
+} else {
+    echo json_encode(['success' => false, 'message' => 'Dati mancanti']);
 }
-else{
-	$stmtNumComp = $conn->prepare("SELECT id FROM competenze WHERE descrizione = '".$competenza."'");
-    $stmtNumComp->execute();
-    $result = $stmtNumComp->fetchAll();
-    foreach($result as $row)$comp1=$row["id"];
-    
-	$stmtComp = $conn->prepare("UPDATE progetti_competenze
-                               SET fk_competenze =".$comp1."
-                               WHERE fk_progetti=".$idPrj);
-    $stmtComp->execute();
-
-}
- 
-echo json_encode(array('success' => true));
-
-
 ?>

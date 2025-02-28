@@ -1,7 +1,7 @@
 <?php
     session_start();
     // Verifico se l'utente è loggato, altrimenti reindirizzo alla pagina di accesso
-    if (!isset($_SESSION['user_email'])) {
+     if (!isset($_SESSION['user_email'])) {
         header("Location: login.php");
         exit;
     }
@@ -16,6 +16,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
         <style>
@@ -61,6 +62,19 @@
                 object-fit: cover;
                 margin-left: auto; /* Sposta il logo sulla destra */
             }
+
+            .info-circle {
+                width: 24px;
+                height: 24px;
+                position: absolute;
+                top: 10px;
+                right: 12px;
+                cursor: pointer;
+                transition: transform 0.3s;
+            }
+            .info-circle:hover {
+                transform: scale(1.1);
+            }
         </style>
     </head>
 <body>
@@ -91,7 +105,17 @@
             echo "<img src='img/logo.png' alt='Logo' class='logo'>";
             echo "</div>";
             echo "<br><br><br><br>";
-            
+
+            echo '<div class="container position-relative pt-4">';
+            echo '    <!-- Info Circle with Tooltip -->';
+            echo '    <div class="info-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Clicca un qualsiasi campo per cambiarlo">';
+            echo '        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#00245d" class="bi bi-info-circle-fill" viewBox="0 0 16 16">';
+            echo '            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>';
+            echo '        </svg>';
+            echo '    </div>';
+            echo '</div>';
+
+
             $tabGenerale .= "<th>Titolo:</th><td class='mod_campo' id='titolo'>". $value["titolo"]."</td></tr>";
             $stmRef = $conn->prepare("SELECT nominativo FROM docenteReferente WHERE id =". $value["fk_docenteReferente"]);
         	$stmRef->execute();
@@ -258,6 +282,7 @@
     
     <br>
 </body>
+
 <script>
 var element = document.getElementById('title');
 var idProgetto = element.getAttribute('data-id'); // Legge l'attributo corretto
@@ -353,26 +378,30 @@ $('#tempi').on('click', function(){
     );
 });
 
-$('#comp1, #comp2').on('click', function(){
-	var id = $(this).attr('id');
+$('#comp1, #comp2').on('click', function() {
+    var id = $(this).attr('id');
     var elemento = document.querySelector("#title");
     var idProgetto = elemento.getAttribute("data-id");
     $('#modifica-campo').show();
     disableScroll();
     $('.modifica-campo-content').empty(); // Pulisci il contenuto precedente
+    
     jQuery.ajax({
         type: 'POST',
         url: "crea_select.php",
         dataType: 'json',
         data: {
-          'id': idProgetto,
+            'id': idProgetto,
         },
-        success: function(response) {                        
+        success: function(response) {
             if (response.success) {
                 // Prendi solo la risposta e assegnala a una variabile
                 var risposta = response.risposta;
-				$('.modifica-campo-content').append('<span id="closer">&times;</span><p class="titMod">Modifica competenza</p> '+ risposta +
-                	'<input type="button" value="Salva" id="submitModifiche" onclick="prendiComp(\'' + id + '\');">'
+                $('.modifica-campo-content').append(
+                    '<span id="closer">&times;</span>' +
+                    '<p class="titMod">Modifica competenza</p> ' + 
+                    risposta +
+                    '<input type="button" value="Salva" id="submitModifiche" onclick="prendiComp(\'' + id + '\', \'' + idProgetto + '\');">'
                 );
             } else {
                 console.error("Errore: " + response.message);
@@ -380,6 +409,81 @@ $('#comp1, #comp2').on('click', function(){
         }
     });
 });
+
+function prendiComp(id, idProgetto) {
+    var newComp = $("#newComp").val();
+    var flag = false;
+    var comp = "";
+    
+    if (newComp.trim()) {
+        // Determina quale competenza stiamo modificando
+        if (id === "comp2") {
+            flag = true;
+            comp = $("#comp2").text();
+        } else if (id === "comp1") {
+            flag = false;
+            comp = $("#comp1").text();
+        }
+        
+        // Se stiamo modificando una competenza esistente
+        if (comp !== "") {
+            if (comp !== newComp) {
+                jQuery.ajax({
+                    type: 'POST',
+                    url: "upd_comp.php",
+                    dataType: 'json',
+                    data: {
+                        'id': idProgetto,
+                        'comp': newComp,
+                        'compExist': comp,
+                        'flag': flag,
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            console.error("Errore: " + response.message);
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        // Funzione chiamata in caso di errore
+                        console.error('Error:', textStatus, errorThrown);
+                        // Puoi gestire qui l'errore, ad esempio mostrando un messaggio all'utente
+                        alert('Si è verificato un errore: ' + textStatus);
+                    }
+                });
+            }
+        } else {
+            // Se stiamo aggiungendo una nuova competenza
+            jQuery.ajax({
+                type: 'POST',
+                url: "upd_comp.php",
+                dataType: 'json',
+                data: {
+                    'id': idProgetto,
+                    'comp': newComp,
+                    'flag': flag,
+                },
+                success: function(response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        console.error("Errore: " + response.message);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    // Funzione chiamata in caso di errore
+                    console.error('Error:', textStatus, errorThrown);
+                    // Puoi gestire qui l'errore, ad esempio mostrando un messaggio all'utente
+                    alert('Si è verificato un errore: ' + textStatus);
+                }
+            });
+        }
+    }
+    
+    enableScroll();
+    $('#modifica-campo').hide();
+}
 
 $('#oreMatt, #orePom').on('click', function(){
 	var id = $(this).attr('id');
@@ -727,72 +831,79 @@ function prendiMesi(){
     
 }
 
-function prendiComp(id){
-
-	var newComp = $("#newComp").val();
+function prendiComp(id, idProgetto) {
+    var newComp = $("#newComp").val();
     var flag = false;
-	if (newComp.trim()) {
-          if(document.getElementById("comp2") != null)
-          {
-          		flag = true;
-          		var comp = $("#comp2").text();
-                if(comp != newComp)
-                {
-                	jQuery.ajax({
-                      type: 'POST',
-                      url: "upd_comp.php",
-                      dataType: 'json',
-                      data: {
+    var comp = "";
+    
+    if (newComp.trim()) {
+        // Determina quale competenza stiamo modificando
+        if (id === "comp2") {
+            flag = true;
+            comp = $("#comp2").text();
+        } else if (id === "comp1") {
+            flag = false;
+            comp = $("#comp1").text();
+        }
+        
+        // Se stiamo modificando una competenza esistente
+        if (comp !== "") {
+            if (comp !== newComp) {
+                jQuery.ajax({
+                    type: 'POST',
+                    url: "upd_comp.php",
+                    dataType: 'json',
+                    data: {
                         'id': idProgetto,
                         'comp': newComp,
                         'compExist': comp,
-                        'flag':flag,
-                      },
-                      success: function(response) {                        
-                          if (response.success) {
-                              location.reload();
-                          } else {
-                              console.error("Errore: " + response.message);
-                          }
-                      },
-                      error: function(jqXHR, textStatus, errorThrown) {
-                          // Funzione chiamata in caso di errore
-                          console.error('Error:', textStatus, errorThrown);
-                          // Puoi gestire qui l'errore, ad esempio mostrando un messaggio all'utente
-                          alert('Si è verificato un errore: ' + textStatus);
-                      }
-                    });
+                        'flag': flag,
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            console.error("Errore: " + response.message);
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        // Funzione chiamata in caso di errore
+                        console.error('Error:', textStatus, errorThrown);
+                        // Puoi gestire qui l'errore, ad esempio mostrando un messaggio all'utente
+                        alert('Si è verificato un errore: ' + textStatus);
+                    }
+                });
+            }
+        } else {
+            // Se stiamo aggiungendo una nuova competenza
+            jQuery.ajax({
+                type: 'POST',
+                url: "upd_comp.php",
+                dataType: 'json',
+                data: {
+                    'id': idProgetto,
+                    'comp': newComp,
+                    'flag': flag,
+                },
+                success: function(response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        console.error("Errore: " + response.message);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    // Funzione chiamata in caso di errore
+                    console.error('Error:', textStatus, errorThrown);
+                    // Puoi gestire qui l'errore, ad esempio mostrando un messaggio all'utente
+                    alert('Si è verificato un errore: ' + textStatus);
                 }
-          }
-          else{
-          			jQuery.ajax({
-                      type: 'POST',
-                      url: "upd_comp.php",
-                      dataType: 'json',
-                      data: {
-                        'id': idProgetto,
-                        'comp': newComp,
-                        'flag':flag,
-                      },
-                      success: function(response) {                        
-                          if (response.success) {
-                              location.reload();
-                          } else {
-                              console.error("Errore: " + response.message);
-                          }
-                      },
-                      error: function(jqXHR, textStatus, errorThrown) {
-                          // Funzione chiamata in caso di errore
-                          console.error('Error:', textStatus, errorThrown);
-                          // Puoi gestire qui l'errore, ad esempio mostrando un messaggio all'utente
-                          alert('Si è verificato un errore: ' + textStatus);
-                      }
-                    });
-          }
+            });
+        }
     }
-    enableScroll()
-	$('#modifica-campo').hide();
-	
+    
+    enableScroll();
+    $('#modifica-campo').hide();
 }
 
 function prendiOre(id){
@@ -1330,6 +1441,10 @@ $('#cancelButton2').on('click', function() {
     modal2.style.display = "none";
 });
 
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
 </script>
 <script src='script.js'></script>
 </html>

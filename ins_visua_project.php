@@ -142,7 +142,7 @@
         <h1 class="title">Bentornato/a <?php echo $nome; ?></h1>
         <button id="ButtIns" class="btn-custom">Inserire progetto</button>
         <button id="ButtVisua" class="btn-custom">Visualizzare progetti</button>
-        <button id="ButtRendi" class="btn-custom">Visualizzare rendicontazione</button>
+        <button id="ButtRendi" class="btn-custom">Rendicantazione e modifica</button>
         <?php
             if ($_SESSION["nominativo"] == "Amministratore") {
                 echo "<button id='ButtAmm' class='btn-custom'>Funzioni Amministratore</button>";

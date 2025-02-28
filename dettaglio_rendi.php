@@ -343,7 +343,7 @@ function addPopupEventListenersExt() {
 }
 
 function tornaIndietro() {
-        window.location.href = "ins_visua_project.php";
+        window.location.href = "rendicontazione.php";
     }
   </script>
 </html>

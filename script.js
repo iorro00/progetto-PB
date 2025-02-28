@@ -158,12 +158,16 @@ function deselezionaCheckbox(){
     document.getElementById('selectAll').style.display="inline-block";
 }
 
-function mostraClassi(){
-
-    const checkboxes = document.querySelectorAll('input[name="annata"]:checked, input[name="indirizzo"]:checked');
+function mostraClassi() {
     const anno = document.querySelectorAll('input[name="annata"]:checked');
     const addr = document.querySelectorAll('input[name="indirizzo"]:checked');
-    var valoriConcatenati = [];
+    let classiDaMostrare = new Set();
+
+    // Se non ci sono filtri selezionati, pulisci e esci
+    if (anno.length === 0 && addr.length === 0) {
+        document.getElementById('classi-selezionate').innerHTML = '';
+        return;
+    }
 
     const opzioniPerIndirizzo = {
         'Informatico': {
@@ -193,104 +197,61 @@ function mostraClassi(){
             '3': ['3A', '3B'],
             '4': ['4A', '4B'],
             '5': ['5A', '5B']
-        },
+        }
     };
-        
-    checkboxes.forEach((checkbox) => {
-        if((addr.length > 0)&&(anno.length > 0)){
-            for (var ind in opzioniPerIndirizzo) {
-                if(checkbox.value == ind){
-                    const livelli = opzioniPerIndirizzo[ind];
-                    
-                    for (var livello in livelli) {
-                        anno.forEach((a)=>{
-                            if(a.value == livello){
-                                var valori = livelli[livello];
-        
-                                // Concatenare i valori in una stringa separata da virgole
-                                var valoriConcatenatiString = valori.join(', ');
-        
-                                // Aggiungere la stringa concatenata all'array valoriConcatenati
-                                valoriConcatenati.push(valoriConcatenatiString);  
-                            }
-                        });
-                    }
-                }
+
+    // Logica di filtro
+    if (addr.length > 0) {
+        // Filtro per indirizzo
+        addr.forEach(indirizzo => {
+            const indirizzoClassi = opzioniPerIndirizzo[indirizzo.value];
+            if (anno.length > 0) {
+                // Filtro combinato indirizzo + anno
+                anno.forEach(a => {
+                    const classiAnno = indirizzoClassi[a.value] || [];
+                    classiAnno.forEach(classe => classiDaMostrare.add(classe));
+                });
+            } else {
+                // Solo indirizzo
+                Object.values(indirizzoClassi).forEach(classi => {
+                    classi.forEach(classe => classiDaMostrare.add(classe));
+                });
             }
-        }
-        else if(anno.length > 0){
-            for (var ind in opzioniPerIndirizzo) {
-                const livelli = opzioniPerIndirizzo[ind];
-                
-                for (var livello in livelli) {
-                    anno.forEach((a)=>{
-                        if(a.value == livello){
-                            var valori = livelli[livello];
-        
-                            // Concatenare i valori in una stringa separata da virgole
-                            var valoriConcatenatiString = valori.join(', ');
-        
-                            // Aggiungere la stringa concatenata all'array valoriConcatenati
-                            valoriConcatenati.push(valoriConcatenatiString);  
-                        }
-                    });
-                }
-            }
-        }
-        else if(addr.length >0)
-        { 
-            for (var ind in opzioniPerIndirizzo) {
-                if(checkbox.value == ind){
-                    const livelli = opzioniPerIndirizzo[ind];
-                    
-                    for (var livello in livelli) {
-                        var valori = livelli[livello];
-
-                        // Concatenare i valori in una stringa separata da virgole
-                        var valoriConcatenatiString = valori.join(', ');
-
-                        // Aggiungere la stringa concatenata all'array valoriConcatenati
-                        valoriConcatenati.push(valoriConcatenatiString);  
-                    }
-                }
-            }
-
-        }
-    });
-
-    var addClass = document.getElementById('classi-selezionate');
-    addClass.innerHTML = '';
-    var tableHTML = '<table id="TabClassi"><tr>';
-    var rowCount = 0;
-    var columnOpen = false;
-
-    valoriConcatenati.forEach(function(valoreConcatenato, index) {
-        const elementiSingoli = valoreConcatenato.split(', ');
-
-        elementiSingoli.forEach(function(elemento) {
-            if (rowCount % 4 === 0) {
-                if (columnOpen) {
-                    tableHTML += '</tr>';
-                }
-                tableHTML += '</tr><tr>';
-                columnOpen = true;
-            }
-
-            var labelHtml = `<label for="${elemento}">${elemento}</label>`;
-            var inputHtml = `<input type="checkbox" class="classe" name="${elemento}" value="${elemento}">`;
-            tableHTML += `<div class="divisore"><td>${labelHtml}</td><td>${inputHtml}</td></div>`;
-            rowCount++;
         });
-    });
-
-    if (columnOpen) {
-        tableHTML += '</tr>';
+    } else if (anno.length > 0) {
+        // Solo filtro per anno
+        anno.forEach(a => {
+            Object.values(opzioniPerIndirizzo).forEach(indirizzo => {
+                const classiAnno = indirizzo[a.value] || [];
+                classiAnno.forEach(classe => classiDaMostrare.add(classe));
+            });
+        });
     }
 
+    // Genera la tabella HTML
+    const addClass = document.getElementById('classi-selezionate');
+    let tableHTML = '<table id="TabClassi"><tr>';
+    let rowCount = 0;
+    
+    Array.from(classiDaMostrare).sort().forEach(classe => {
+        if (rowCount % 4 === 0 && rowCount > 0) {
+            tableHTML += '</tr><tr>';
+        }
+        tableHTML += `
+            <div class="divisore">
+                <td><label for="${classe}">${classe}</label></td>
+                <td><input type="checkbox" class="classe" name="${classe}" value="${classe}"></td>
+            </div>`;
+        rowCount++;
+    });
+
+    // Chiudi l'ultima riga se necessario
+    if (rowCount > 0) {
+        tableHTML += '</tr>';
+    }
     tableHTML += '</table>';
 
     addClass.innerHTML = tableHTML;
-    event.preventDefault();
 }
       
  
