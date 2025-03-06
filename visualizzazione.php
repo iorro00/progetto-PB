@@ -93,12 +93,13 @@
     </div>
     <br><br><br>
 
-    <?php
+            <?php
         require_once("db.php");
 
+        // Prima tabella (progetti) - rimane invariata
         $table = "<table class='tbVisua' id='firstTb'>
                     <tr>
-                    	<th style= display:none;></th>
+                        <th style= display:none;></th>
                         <th>Titolo Progetto</th>
                         <th>Dipartimento</th>
                         <th>Docente Referente</th>
@@ -107,11 +108,11 @@
         $stm = $conn->prepare("SELECT id, titolo, fk_dipartimento, fk_docenteReferente FROM progetti order by titolo asc");
         $stm->execute();
         $result = $stm->fetchAll();
-        
+                
         foreach($result as $row) {
             $varDip = '';
             if($row["fk_dipartimento"]){
-            	echo "<p get-progetti='".$row['id']."' style=display:none class='progett'></p>";
+                echo "<p get-progetti='".$row['id']."' style=display:none class='progett'></p>";
                 $dip = $conn->prepare("SELECT nome FROM dipartimento WHERE id = ?");
                 $dip->execute([$row["fk_dipartimento"]]);
                 $resultDip = $dip->fetch();
@@ -125,15 +126,57 @@
                 $varRef = $resultRef["nominativo"];
             }
             $table .= "<tr>
-            			<td style= display:none; >" . $row["id"] . "</td>
+                        <td style= display:none; >" . $row["id"] . "</td>
                         <td>" . $row["titolo"] . "</td>
                         <td>" . $varDip . "</td>
                         <td>" . $varRef . "</td>
-                       </tr>";
+                        </tr>";
         }
         $table .= "</table>";
         echo $table;
 
+        $tableProgettiOre = "<table class='tbVisua' id='tbProgettiOre'>
+        <tr>
+            <th>Titolo Progetto</th>
+            <th>Ore Progettazione</th>
+            <th>Ore Curricolari</th>
+            <th>Ore Extracurricolari</th>
+            <th>Ore Sorveglianza</th>
+        </tr>";
+
+        $stmProgetti = $conn->prepare("
+        SELECT 
+        p.id AS ID_Progetto, 
+        p.titolo AS Titolo_Progetto,
+        COALESCE(SUM(ri.oreProgettazione), 0) AS TotaleOreProgettazione,
+        COALESCE(SUM(ri.oreCurricolari), 0) AS TotaleOreCurricolari,
+        COALESCE(SUM(ri.oreExtraCurricolari), 0) AS TotaleOreExtraCurricolari,
+        COALESCE(SUM(ri.oreSorveglianza), 0) AS TotaleOreSorveglianza
+        FROM 
+        progetti p
+        LEFT JOIN progetti_risorse pr ON p.id = pr.fk_progetti
+        LEFT JOIN risorseInterne ri ON pr.fk_risorsaInterna = ri.id
+        GROUP BY 
+        p.id, p.titolo
+        ORDER BY 
+        p.titolo
+        ");
+        $stmProgetti->execute();
+        $progetti = $stmProgetti->fetchAll();
+
+        foreach($progetti as $progetto) {
+        $tableProgettiOre .= "<tr>
+                    <td>" . $progetto["Titolo_Progetto"] . "</td>
+                    <td>" . $progetto["TotaleOreProgettazione"] . "</td>
+                    <td>" . $progetto["TotaleOreCurricolari"] . "</td>
+                    <td>" . $progetto["TotaleOreExtraCurricolari"] . "</td>
+                    <td>" . $progetto["TotaleOreSorveglianza"] . "</td>
+                </tr>";
+        }
+        $tableProgettiOre .= "</table>";
+        echo $tableProgettiOre;
+
+        // Terza tabella (ore totali) - ora con somma senza duplicati
         $tableOre = "<table class='tbVisua' id='tbOre'>
                         <tr>
                             <th>Ore totali Progettazione</th>
@@ -142,20 +185,28 @@
                             <th>Ore totali Sorveglianza</th>
                         </tr>
                         <tr>";
-        $stm = $conn->prepare("SELECT SUM(oreCurricolari)AS oreCurricolari, SUM(oreExtraCurricolari)AS oreExtraCurricolari, SUM(oreSorveglianza)AS oreSorveglianza, SUM(oreProgettazione)AS oreProgettazione FROM risorseInterne");
+
+        $stm = $conn->prepare("
+            SELECT 
+                COALESCE(SUM(ri.oreProgettazione), 0) AS oreProgettazione,
+                COALESCE(SUM(ri.oreCurricolari), 0) AS oreCurricolari,
+                COALESCE(SUM(ri.oreExtraCurricolari), 0) AS oreExtraCurricolari,
+                COALESCE(SUM(ri.oreSorveglianza), 0) AS oreSorveglianza
+            FROM risorseInterne ri
+            JOIN progetti_risorse pr ON ri.id = pr.fk_risorsaInterna
+        ");
         $stm->execute();
-        $result = $stm->fetchAll();
+        $row = $stm->fetch();
 
-        foreach($result as $row)
-        {
-            $tableOre .= "<td>".$row["oreProgettazione"]."</td>";
-            $tableOre .= "<td>".$row["oreCurricolari"]."</td>";
-            $tableOre .= "<td>".$row["oreExtraCurricolari"]."</td>";
-            $tableOre .= "<td>".$row["oreSorveglianza"]."</td>";
-        }
+        $tableOre .= "<td>".$row["oreProgettazione"]."</td>";
+        $tableOre .= "<td>".$row["oreCurricolari"]."</td>";
+        $tableOre .= "<td>".$row["oreExtraCurricolari"]."</td>";
+        $tableOre .= "<td>".$row["oreSorveglianza"]."</td>";
+
         $tableOre .= "</tr></table>";
-
         echo $tableOre;
+
+
         
         $tableMatPom = "<table class='tbVisua' id='tbMatPom'>
                         <tr>
@@ -393,28 +444,29 @@ function evento(id){
             url: "crea_selez_filtrata.php",
             dataType: 'json',
             data: {
-            'classi': classiSelezionate,
+                'classi': classiSelezionate,
             },
             success: function(response) {                        
                 if (response.success) {
-                    // Prendi solo la risposta e assegnala a una variabile
-                    var tbVisua = response.risposta;
-                    var tbOre = response.risposta2;
-                    var tbMatPom = response.risposta3;
-                    progetti = response.risposta4;
-                    $('#firstTb').html(tbVisua);
-                    $('#tbOre').html(tbOre);
-                    $('#tbMatPom').html(tbMatPom);
+                    $('#firstTb').html(response.risposta);
+                    $('#tbProgettiOre').html(response.risposta_ore_progetti);
+                    $('#tbOre').html(response.risposta2);
+                    $('#tbMatPom').html(response.risposta3);
                     
+                    // Aggiorna l'array dei progetti per la stampa
+                    progetti = response.risposta4;
                 } else {
                     console.error("Errore: " + response.message);
                 }
+            },
+            error: function(xhr, status, error) {
+                console.error("Errore nella chiamata AJAX: ", error);
             }
         });
 
-        popup.style.display='none'; //quando schiacchio invio, il popup si chiude
+        popup.style.display = 'none'; // chiudi il popup
         enableScroll();
-    }   
+    }
 
     function torna(){
         window.location.href = "ins_visua_project.php";
