@@ -75,6 +75,10 @@
             .info-circle:hover {
                 transform: scale(1.1);
             }
+            td{
+                background-color: #fdfdff;
+            }
+
         </style>
     </head>
 <body>
