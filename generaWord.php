@@ -2,76 +2,126 @@
 require_once('fpdf.php');
 require_once('db.php');
 
+class PDF extends FPDF {
+    private $firstPage = true;
+    private $alternateRow = false;
+    
+    function Header() {
+        if ($this->firstPage) {
+            $this->SetFont('Arial', 'B', 16);
+            $this->SetTextColor(0, 0, 128);
+            $this->Cell(0, 10, "Progetti IIS BLAISE PASCAL", 0, 1, 'C');
+            $this->Ln(5);
+            $this->firstPage = false;
+        }
+    }
+
+    function Footer() {
+        $this->SetY(-15);
+        $this->SetFont('Arial', 'I', 8);
+        $this->Cell(0, 10, 'Pagina ' . $this->PageNo(), 0, 0, 'C');
+    }
+
+    function AddSectionRow($label, $content) {
+        // Alterna i colori di sfondo per una migliore leggibilità
+        $this->alternateRow = !$this->alternateRow;
+        $fillColor = $this->alternateRow ? [230, 230, 230] : [255, 255, 255];
+        
+        $this->SetFillColor($fillColor[0], $fillColor[1], $fillColor[2]);
+        
+        // Etichetta in grassetto
+        $this->SetFont('Arial', 'B', 12);
+        $this->SetTextColor(0, 0, 0);
+        
+        // Crea una nuova pagina se lo spazio non è sufficiente
+        if ($this->GetY() + 20 > $this->PageBreakTrigger) {
+            $this->AddPage();
+        }
+        
+        $this->MultiCell(0, 10, utf8_decode($label . ":"), 0, 'L', true);
+        
+        // Contenuto in carattere normale
+        $this->SetFont('Arial', '', 12);
+        $this->MultiCell(0, 10, utf8_decode($content), 0, 'L', $this->alternateRow);
+        
+        $this->Ln(2);
+    }
+}
+
 // Recupera i dati inviati tramite POST
 $idProjects = $_POST['idProjects'];
 
 // Genera il PDF
-$pdf = new FPDF();
+$pdf = new PDF();
 $pdf->AddPage();
-$pdf->SetFont('Arial', 'B', 12);
-$pdf->Cell(10, 10, "Progetti IIS BLAISE PASCAL");
-$pdf->Ln(); // Line break
-$pdf->Ln(); // Line break
-$pdf->SetFont('Arial', '', 12);
 
 foreach ($idProjects as $project) {
     // Esegui la query per ottenere i dettagli del progetto
     $sql = "SELECT * FROM progetti
             INNER JOIN docenteReferente ON docenteReferente.id = progetti.fk_docenteReferente
-            WHERE progetti.id = $project";
+            WHERE progetti.id = :project";
     
     $stm = $conn->prepare($sql);
+    $stm->bindParam(':project', $project, PDO::PARAM_INT);
     $stm->execute();
-    $result = $stm->fetchAll(PDO::FETCH_ASSOC); // Fetch results as associative array
-    
+    $result = $stm->fetchAll(PDO::FETCH_ASSOC);
+
     if ($result) {
         foreach ($result as $row) {
-        	$pdf->SetFont('Arial', 'B', 12);
-            $pdf->Cell(10, 10, "Progetto: " . $row["titolo"]);
-            $pdf->Ln(); // Line break
-            $pdf->SetFont('Arial', '', 12);
-            $pdf->Cell(10, 10, "Docente referente: " . $row["nominativo"]);
-            $pdf->Ln(); // Line break
-            $classi="Classi: ";
+            // Titolo del progetto con sfondo
+            $pdf->SetFillColor(100, 100, 255);
+            $pdf->SetTextColor(255, 255, 255);
+            $pdf->SetFont('Arial', 'B', 14);
+            $pdf->Cell(0, 10, "Progetto: " . utf8_decode($row["titolo"]), 0, 1, 'C', true);
+            $pdf->Ln(4);
+
+            // Docente referente
+            $pdf->SetTextColor(0, 0, 0);
+            $pdf->SetFont('Arial', 'B', 12);
+            $pdf->Cell(0, 8, "Docente referente: " . utf8_decode($row["nominativo"]), 0, 1, 'L');
+            $pdf->Ln(3);
+
+            // Recupera le classi
             $stmt = $conn->prepare("SELECT c.anno_classe, c.sezione 
-                        FROM progetti_classi pc
-                        JOIN classi c ON pc.fk_classe = c.id
-                        WHERE pc.fk_progetto = :id");
-
-            // Associa il parametro alla query
+                                    FROM progetti_classi pc
+                                    JOIN classi c ON pc.fk_classe = c.id
+                                    WHERE pc.fk_progetto = :id");
+                                    
             $stmt->bindParam(':id', $project, PDO::PARAM_INT);
-
-            // Esegui la query
             $stmt->execute();
-
-            // Ottieni tutti i risultati
             $sezioni = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            foreach($sezioni as $cls)
-            {
-            	$classi.= $cls["anno_classe"] . $cls["sezione"] . ", ";
+            
+            $classi = "Classi coinvolte: ";
+            foreach ($sezioni as $cls) {
+                $classi .= $cls["anno_classe"] . $cls["sezione"] . ", ";
             }
-            $classi2 = substr($classi, 0, -2);
-            $pdf->Cell(10, 10, $classi2);
-            $pdf->Ln(); // Line break
-            $pdf->Cell(10, 10, "Il progetto e' strutturale? " . $row["strutturale"]);
-            $pdf->Ln(); // Line break
-            $pdf->Cell(10, 10, "Il progetto fa parte dei percorsi di PCTO?: " . $row["PCTO"]);
-            $pdf->Ln(); // Line break
-            $pdf->Cell(10, 10, "Breve analisi del contesto in cui si intende operare e dei bisogni rilevati: " . $row["analisi_contesto"]);
-            $pdf->Ln(); // Line break
-            $pdf->Cell(10, 10, "Obbiettivi attesi: " . $row["obbiettivi_attesi"]);
-            $pdf->Ln(); // Line break
-            $pdf->Cell(10, 10, "Attivita' previste: " . $row["attivita_previste"]);
-            $pdf->Ln(); // Line break
-            $pdf->Cell(10, 10, "Metodologia e strumenti: " . $row["metodologia_e_strumenti"]);
-            $pdf->Ln(); // Line break
-            $pdf->Cell(10, 10, "Luoghi di svolgimento: " . $row["luoghi_svolgimento"]);
-            $pdf->Ln(); // Line break
-            $pdf->Cell(10, 10, "Tempi di svolgimento: " . $row["tempi_svolgimento"]);
-            $pdf->Ln(); // Line break
-            $pdf->Cell(10, 10, "Modalita' di verifica in itinere e finale: " . $row["verifica_itinere_e_finale"]);
-            $pdf->Ln(); // Line break
-            $pdf->Ln(); // Additional line break for spacing between projects
+            $classi = rtrim($classi, ', ');
+            $pdf->Cell(0, 8, utf8_decode($classi), 0, 1, 'L');
+            $pdf->Ln(3);
+
+            // Campi da mostrare
+            $fields = [
+                "Il progetto e' strutturale? " => $row["strutturale"],
+                "Il progetto fa parte dei percorsi di PCTO?" => $row["PCTO"],
+                "Breve analisi del contesto in cui si intende operare e dei bisogni rilevati: " => $row["analisi_contesto"],
+                "Obiettivi attesi" => $row["obbiettivi_attesi"],
+                "Attività previste" => $row["attivita_previste"],
+                "Metodologia e strumenti" => $row["metodologia_e_strumenti"],
+                "Luoghi di svolgimento" => $row["luoghi_svolgimento"],
+                "Tempi di svolgimento" => $row["tempi_svolgimento"],
+                "Modalita' di verifica in itinere e finale" => $row["verifica_itinere_e_finale"]
+            ];
+
+            // Mostra ogni campo con stile alternato
+            foreach ($fields as $key => $value) {
+                $pdf->AddSectionRow($key, $value);
+            }
+
+            // Linea di separazione tra i progetti
+            $pdf->SetDrawColor(100, 100, 255);
+            $pdf->SetLineWidth(0.5);
+            $pdf->Line(10, $pdf->GetY(), 200, $pdf->GetY());
+            $pdf->Ln(5);
         }
     } else {
         error_log("Nessun risultato trovato per l'ID progetto $project");
@@ -84,5 +134,4 @@ $pdf->Output('F', $file);
 
 // Risponde con l'URL del file PDF
 echo json_encode(array('success' => true, 'pdf_url' => 'scarica_pdf.php?file=' . basename($file)));
-
 ?>
