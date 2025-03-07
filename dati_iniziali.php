@@ -387,54 +387,54 @@
                     <table class="table table-bordered" id="tbMesi">
                         <tr>
                             <td><div class="form-check">
-                                <input type="checkbox" class="form-check-input" value="Gennaio" name="mese[]" id="gen">
-                                <label class="form-check-label" for="gen">Gennaio</label>
+                                <input type="checkbox" class="form-check-input" value="Settembre" name="mese[]" id="gen">
+                                <label class="form-check-label" for="gen">Settembre</label>
                             </div></td>
                             <td><div class="form-check">
-                                <input type="checkbox" class="form-check-input" value="Febbraio" name="mese[]" id="feb">
-                                <label class="form-check-label" for="feb">Febbraio</label>
+                                <input type="checkbox" class="form-check-input" value="Ottobre" name="mese[]" id="feb">
+                                <label class="form-check-label" for="feb">Ottobre</label>
                             </div></td>
                             <td><div class="form-check">
-                                <input type="checkbox" class="form-check-input" value="Marzo" name="mese[]" id="mar">
-                                <label class="form-check-label" for="mar">Marzo</label>
+                                <input type="checkbox" class="form-check-input" value="Novembre" name="mese[]" id="mar">
+                                <label class="form-check-label" for="mar">Novembre</label>
                             </div></td>
                             <td><div class="form-check">
-                                <input type="checkbox" class="form-check-input" value="Aprile" name="mese[]" id="apr">
-                                <label class="form-check-label" for="apr">Aprile</label>
+                                <input type="checkbox" class="form-check-input" value="Dicembre" name="mese[]" id="apr">
+                                <label class="form-check-label" for="apr">Dicembre</label>
                             </div></td>
                             <td><div class="form-check">
-                                <input type="checkbox" class="form-check-input" value="Maggio" name="mese[]" id="mag">
-                                <label class="form-check-label" for="mag">Maggio</label>
+                                <input type="checkbox" class="form-check-input" value="Gennaio" name="mese[]" id="mag">
+                                <label class="form-check-label" for="mag">Gennaio</label>
                             </div></td>
                             <td><div class="form-check">
-                                <input type="checkbox" class="form-check-input" value="Giugno" name="mese[]" id="giu">
-                                <label class="form-check-label" for="giu">Giugno</label>
+                                <input type="checkbox" class="form-check-input" value="Febbraio" name="mese[]" id="giu">
+                                <label class="form-check-label" for="giu">Febbraio</label>
                             </div></td>
                         </tr>
                         <tr>
                             <td><div class="form-check">
-                                <input type="checkbox" class="form-check-input" value="Luglio" name="mese[]" id="lug">
-                                <label class="form-check-label" for="lug">Luglio</label>
+                                <input type="checkbox" class="form-check-input" value="Marzo" name="mese[]" id="lug">
+                                <label class="form-check-label" for="lug">Marzo</label>
                             </div></td>
                             <td><div class="form-check">
-                                <input type="checkbox" class="form-check-input" value="Agosto" name="mese[]" id="ago">
-                                <label class="form-check-label" for="ago">Agosto</label>
+                                <input type="checkbox" class="form-check-input" value="Aprile" name="mese[]" id="ago">
+                                <label class="form-check-label" for="ago">Aprile</label>
                             </div></td>
                             <td><div class="form-check">
-                                <input type="checkbox" class="form-check-input" value="Settembre" name="mese[]" id="set">
-                                <label class="form-check-label" for="set">Settembre</label>
+                                <input type="checkbox" class="form-check-input" value="Maggio" name="mese[]" id="set">
+                                <label class="form-check-label" for="set">Maggio</label>
                             </div></td>
                             <td><div class="form-check">
-                                <input type="checkbox" class="form-check-input" value="Ottobre" name="mese[]" id="ott">
-                                <label class="form-check-label" for="ott">Ottobre</label>
+                                <input type="checkbox" class="form-check-input" value="Giugno" name="mese[]" id="ott">
+                                <label class="form-check-label" for="ott">Giugno</label>
                             </div></td>
                             <td><div class="form-check">
-                                <input type="checkbox" class="form-check-input" value="Novembre" name="mese[]" id="nov">
-                                <label class="form-check-label" for="nov">Novembre</label>
+                                <input type="checkbox" class="form-check-input" value="Luglio" name="mese[]" id="nov">
+                                <label class="form-check-label" for="nov">Luglio</label>
                             </div></td>
                             <td><div class="form-check">
-                                <input type="checkbox" class="form-check-input" value="Dicembre" name="mese[]" id="dic">
-                                <label class="form-check-label" for="dic">Dicembre</label>
+                                <input type="checkbox" class="form-check-input" value="Agosto" name="mese[]" id="dic">
+                                <label class="form-check-label" for="dic">Agosto</label>
                             </div></td>
                         </tr>
                     </table>
