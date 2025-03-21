@@ -68,22 +68,6 @@
 
             
         </style>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                var rows = document.querySelectorAll('#firstTb tr');
-                
-                rows.forEach(function(row) {
-                    var cells = row.querySelectorAll('td'); // Seleziona tutti i td eccetto l'ultimo
-                    cells.forEach(function(cell) {
-                        cell.addEventListener('click', function() {
-                            var projectId = row.cells[0].innerHTML; // L'ID del progetto è nella prima cella
-                            document.getElementById('projectIdTaken').value = projectId; // Imposta l'ID del progetto nel campo nascosto
-                            document.getElementById('projectForm').submit(); // Invia il modulo
-                        });
-                    });
-                });
-            });
-        </script>
     </head>
 <body>
     <div id="top-bar" class="top-bar d-flex align-items-center p-3" style="display: none;">
@@ -374,6 +358,29 @@
         progetti.push(idProgetto);
     });
     
+    // Funzione per collegare gli event listener alle righe della tabella
+    function attachClickEventsToRows() {
+        var rows = document.querySelectorAll('#firstTb tr');
+        
+        rows.forEach(function(row, index) {
+            if (index > 0) { // Salta l'intestazione (prima riga)
+                var cells = row.querySelectorAll('td');
+                cells.forEach(function(cell) {
+                    cell.addEventListener('click', function() {
+                        var projectId = row.cells[0].innerHTML;
+                        document.getElementById('projectIdTaken').value = projectId;
+                        document.getElementById('projectForm').submit();
+                    });
+                });
+            }
+        });
+    }
+    
+    // Aggiungi gli event listener alle righe della tabella all'avvio
+    document.addEventListener('DOMContentLoaded', function() {
+        attachClickEventsToRows();
+    });
+    
     stampa.addEventListener('click', function() {
         jQuery.ajax({
           type: 'POST',
@@ -455,6 +462,9 @@ function evento(id){
                     
                     // Aggiorna l'array dei progetti per la stampa
                     progetti = response.risposta4;
+                    
+                    // Ricollegare gli event listener alle righe della tabella
+                    attachClickEventsToRows();
                 } else {
                     console.error("Errore: " + response.message);
                 }

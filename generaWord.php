@@ -57,9 +57,11 @@ $pdf->AddPage();
 
 foreach ($idProjects as $project) {
     // Esegui la query per ottenere i dettagli del progetto
-    $sql = "SELECT * FROM progetti
-            INNER JOIN docenteReferente ON docenteReferente.id = progetti.fk_docenteReferente
-            WHERE progetti.id = :project";
+    $sql = "SELECT * 
+            FROM progetti
+            INNER JOIN docenteReferente ON docenteReferente.id = progetti.fk_docenteReferente JOIN progetti_classi prc ON prc.fk_progetto = progetti.id
+            WHERE progetti.id = :project
+            GROUP BY progetti.id";
     
     $stm = $conn->prepare($sql);
     $stm->bindParam(':project', $project, PDO::PARAM_INT);
@@ -109,6 +111,8 @@ foreach ($idProjects as $project) {
                 "Metodologia e strumenti" => $row["metodologia_e_strumenti"],
                 "Luoghi di svolgimento" => $row["luoghi_svolgimento"],
                 "Tempi di svolgimento" => $row["tempi_svolgimento"],
+                "Ore alla mattina" =>$row["ore_mattina"],
+                "Ore alla pomeriggio" =>$row["ore_pomeriggio"],
                 "Modalita' di verifica in itinere e finale" => $row["verifica_itinere_e_finale"]
             ];
 
