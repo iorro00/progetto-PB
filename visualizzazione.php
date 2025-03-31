@@ -79,7 +79,6 @@
 
             <?php
         require_once("db.php");
-
         // Prima tabella (progetti) - rimane invariata
         $table = "<table class='tbVisua' id='firstTb'>
                     <tr>
@@ -119,6 +118,13 @@
         $table .= "</table>";
         echo $table;
 
+
+        //query per sapere se è docente e quindi visualizzare le ore
+        $stm0 = $conn->prepare("SELECT id FROM docenteReferente WHERE nominativo = ?");
+        $stm0->execute([$_SESSION["nominativo"]]);
+        $idDoc = $stm0->fetch(PDO::FETCH_ASSOC);
+
+    if (!$idDoc) {
         $tableProgettiOre = "<table class='tbVisua' id='tbProgettiOre'>
         <tr>
             <th>Titolo Progetto</th>
@@ -159,6 +165,10 @@
         }
         $tableProgettiOre .= "</table>";
         echo $tableProgettiOre;
+    }
+
+
+
 
         // Terza tabella (ore totali) - ora con somma senza duplicati
         $tableOre = "<table class='tbVisua' id='tbOre'>

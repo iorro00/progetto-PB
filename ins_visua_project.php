@@ -3,27 +3,27 @@
     session_set_cookie_params(7200);
     session_start();
     
-    // Verifico se l'utente ha efettuato l'accesso oppure no
     if (!isset($_SESSION['user_email'])) {
         header("Location: login.php");
         exit;
     }
-    
-    // Ottiengo la parte locale dell'email (prima del @)
-    $localPart = explode('@', $_SESSION['user_email'])[0];
-    
-    // Divido la parte locale in nome e cognome usando '.'
-    list($nome, $cognome) = explode('.', $localPart);
-    
-    //Essendo le due stringhe in minuscolo, converto in maiuscolo la prima lettera
-    $nome = ucfirst($nome);
-    $cognome = ucfirst($cognome);
-    
-    $_SESSION["nominativo"] = $cognome . " " . $nome;
-    
-    if($_SESSION['user_email'] == "progettiptof@iispascal.it") {
-        $nome = "Amministratore";
-        $_SESSION["nominativo"] = $nome;
+
+    // Ottieni la parte locale dell'email (prima del @)
+    $emailParts = explode('@', $_SESSION['user_email']);
+    $localPart = $emailParts[0];
+
+    // Controllo se c'è un punto nella parte locale
+    if (strpos($localPart, '.') !== false) {
+        list($nome, $cognome) = explode('.', $localPart);
+        $nome = ucfirst($nome);
+        $cognome = ucfirst($cognome);
+        $_SESSION["nominativo"] = $cognome . " " . $nome;
+    } else {
+        $_SESSION["nominativo"] = ucfirst($localPart); // Caso fallback
+    }
+
+    if ($_SESSION['user_email'] == "progettiptof@iispascal.it") {
+        $_SESSION["nominativo"] = "Amministratore";
         header("Location: pagina_amm.php");
         exit;
     }
@@ -152,5 +152,21 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
+    <script>
+        <?php
+            require_once("db.php");
+            $stm0 = $conn->prepare("SELECT id FROM docenteReferente WHERE nominativo = ?");
+            $stm0->execute([$_SESSION["nominativo"]]);
+            $idDoc = $stm0->fetch(PDO::FETCH_ASSOC);
+            
+            $isDocente = $idDoc ? 'true' : 'false';
+        ?>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (!<?php echo $isDocente; ?>) {
+                document.getElementById("ButtIns").style.display = "none";
+                document.getElementById("ButtRendi").style.display = "none";
+            }
+        });
+    </script>
 </body>
 </html>
