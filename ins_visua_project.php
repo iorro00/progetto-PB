@@ -1,60 +1,64 @@
 <?php
-    ini_set('session.gc_maxlifetime', 7200);
-    session_set_cookie_params(7200);
-    session_start();
-    
-    if (!isset($_SESSION['user_email'])) {
-        header("Location: login.php");
-        exit;
-    }
+ini_set('session.gc_maxlifetime', 7200);
+session_set_cookie_params(7200);
+session_start();
 
-    // Ottieni la parte locale dell'email (prima del @)
-    $emailParts = explode('@', $_SESSION['user_email']);
-    $localPart = $emailParts[0];
+if (!isset($_SESSION['user_email'])) {
+    header("Location: login.php");
+    exit;
+}
 
-    // Controllo se c'è un punto nella parte locale
-    if (strpos($localPart, '.') !== false) {
-        list($nome, $cognome) = explode('.', $localPart);
-        $nome = ucfirst($nome);
-        $cognome = ucfirst($cognome);
-        $_SESSION["nominativo"] = $cognome . " " . $nome;
-    } else {
-        $_SESSION["nominativo"] = ucfirst($localPart); // Caso fallback
-    }
+// Ottieni la parte locale dell'email (prima del @)
+$emailParts = explode('@', $_SESSION['user_email']);
+$localPart = $emailParts[0];
 
-    if ($_SESSION['user_email'] == "progettiptof@iispascal.it") {
-        $_SESSION["nominativo"] = "Amministratore";
-        header("Location: pagina_amm.php");
-        exit;
-    }
+// Controllo se c'è un punto nella parte locale
+if (strpos($localPart, '.') !== false) {
+    list($nome, $cognome) = explode('.', $localPart);
+    $nome = ucfirst($nome);
+    $cognome = ucfirst($cognome);
+    $_SESSION["nominativo"] = $cognome . " " . $nome;
+} else {
+    $_SESSION["nominativo"] = ucfirst($localPart); // Caso fallback
+}
+
+if ($_SESSION['user_email'] == "progettiptof@iispascal.it") {
+    $_SESSION["nominativo"] = "Amministratore";
+    header("Location: pagina_amm.php");
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
+    <!-- Meta tag viewport per rendere la pagina responsive -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PTOF Builder</title>
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
-    
     <style>
         body {
             font-family: 'Source Sans Pro', sans-serif;
             margin: 0;
+            background-color: #f8f9fa;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background-color: #f8f9fa;
+            min-height: 100vh;
         }
-        .container {
+        .container-custom {
             background: white;
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+            width: 90%;
             max-width: 600px;
             text-align: center;
+            margin: 20px;
         }
         .logo {
             width: 140px;
@@ -94,7 +98,7 @@
         .logout-link {
             font-family: 'Playfair Display', serif;
             font-size: 1.2rem;
-            margin-top: 80px;
+            margin-top: 40px;
             color: #2c3e50;
             cursor: pointer;
             text-decoration: none;
@@ -121,8 +125,9 @@
             transform: scaleX(1);
             transform-origin: bottom left;
         }
+        /* Media queries per dispositivi piccoli */
         @media (max-width: 576px) {
-            .container {
+            .container-custom {
                 padding: 25px;
                 margin: 15px;
             }
@@ -137,11 +142,12 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container-custom">
         <img src="img/logo.png" alt="Logo PTOF Builder" class="logo">
-        <h1 class="title">Bentornato/a <?php echo $nome; ?></h1>
+        <h1 class="title">Bentornato/a <?php echo htmlspecialchars($nome); ?></h1>
         <button id="ButtIns" class="btn-custom">Inserire progetto</button>
         <button id="ButtVisua" class="btn-custom">Visualizzare progetti</button>
+        <button id="altraVisua" class="btn-custom" onclick="torna()">Visualizzazione veloce</button>
         <button id="ButtRendi" class="btn-custom">Rendicantazione e modifica</button>
         <?php
             if ($_SESSION["nominativo"] == "Amministratore") {
@@ -150,6 +156,7 @@
         ?>
         <a href="login.php" id="exit-link" class="logout-link" onclick="logout()">Ritorna all'accesso</a>
     </div>
+    <!-- Bootstrap Bundle con Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
     <script>
@@ -167,6 +174,10 @@
                 document.getElementById("ButtRendi").style.display = "none";
             }
         });
+
+        function torna(){
+            window.location.href = "ulterioreResoconto.php";
+        }
     </script>
 </body>
 </html>

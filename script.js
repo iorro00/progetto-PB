@@ -35,6 +35,8 @@ if (window.location.href.includes('ins_visua_project.php')) {
             }, 400);
         });
     }
+
+
 }
  
 function generaRisorse() {
