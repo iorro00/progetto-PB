@@ -66,6 +66,19 @@
                 flex-grow: 1;
             }
 
+            .info-circle {
+                width: 24px;
+                height: 24px;
+                position: absolute;
+                top: 10px;
+                right: 12px;
+                cursor: pointer;
+                transition: transform 0.3s;
+            }
+            .info-circle:hover {
+                transform: scale(1.1);
+            }
+
             
         </style>
     </head>
@@ -75,7 +88,15 @@
             <p id="title" class="m-0 mx-auto text-white">ELENCO PROGETTI IIS BLAISE PASCAL</p>
             <button id="butt-filtri" >Filtri</button>
     </div>
-    <br><br><br>
+    <br><br><br><br>
+        <div class="container position-relative pt-4">
+            <!-- Info Circle with Tooltip -->
+            <div class="info-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cliccare su un qualsiasi progetto per visualizzarne i dettagli.">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#00245d" class="bi bi-info-circle-fill" viewBox="0 0 16 16">
+                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                </svg>
+            </div>
+        </div>
 
             <?php
         require_once("db.php");
@@ -491,6 +512,11 @@ function evento(id){
     function torna(){
         window.location.href = "ins_visua_project.php";
     }
+
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
             
 </script>
 <script  src="script.js"></script>
