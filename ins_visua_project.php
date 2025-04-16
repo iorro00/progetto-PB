@@ -148,7 +148,7 @@ if ($_SESSION['user_email'] == "progettiptof@iispascal.it") {
         <button id="ButtIns" class="btn-custom">Inserire progetto</button>
         <button id="ButtVisua" class="btn-custom">Visualizzare progetti</button>
         <button id="altraVisua" class="btn-custom" onclick="torna()">Visualizzazione veloce</button>
-        <button id="ButtRendi" class="btn-custom">Rendicantazione e modifica</button>
+        <button id="ButtRendi" class="btn-custom">rendicontazione e modifica progetti</button>
         <?php
             if ($_SESSION["nominativo"] == "Amministratore") {
                 echo "<button id='ButtAmm' class='btn-custom'>Funzioni Amministratore</button>";

@@ -67,6 +67,153 @@
                 text-align: center;
                 flex-grow: 1;
             }
+
+            
+            :root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --bg-color: #ffffff;
+    --hover-bg: #f8f9fa;
+    --border-color: #dee2e6;
+    --shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    --transition-speed: 0.3s;
+  }
+
+  /* Modal base */
+  #boxFiltri .modal-dialog {
+    max-width: 800px;
+  }
+
+  .modal-content {
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    border: none;
+  }
+
+  .modal-header {
+    background: #00245d;
+    color: var(--bg-color);
+    padding: 1rem 1.5rem;
+  }
+
+  .modal-header .modal-title {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .btn-close {
+    filter: brightness(0) invert(1);
+    margin-top: 1px !important;
+  }
+
+  .modal-body {
+    background: var(--bg-color);
+    padding: 2rem 1.5rem;
+  }
+
+  h4 {
+    color: #00245d;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--secondary-color);
+  }
+
+  /* Layout dei checkbox in riga, con wrapping e spaziatura uniforme */
+  .checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+  }
+
+  .form-check-custom {
+    flex: 1 1 calc(25% - 1rem); /* Per "Indirizzo": 4 elementi per riga */
+    background-color: var(--hover-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.75rem;
+    text-align: center;
+    transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease;
+  }
+
+  /* Adattamento per "Annata" (5 elementi per riga) */
+  #annata .form-check-custom {
+    flex: 1 1 calc(20% - 1rem);
+  }
+
+  .form-check-custom:hover {
+    background-color: var(--bg-color);
+    transform: translateY(-3px);
+    cursor: pointer;
+  }
+
+  .form-check-input {
+    margin: 0;
+    accent-color: var(--primary-color);
+  }
+
+  .form-check-label {
+    display: block;
+    margin-top: 0.5rem;
+    font-weight: 500;
+    color: var(--secondary-color);
+  }
+
+  /* Sezione Classi filtrate: centrata e con larghezza limitata */
+  #classi-filtrate-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+  #classi-selezionate {
+    background: var(--hover-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    max-width: 330px; /* Limite di larghezza */
+    width: 100%;      /* Per adattarsi su schermi stretti */
+    min-height: 50px;
+  }
+
+  /* Bottoni Seleziona/Deseleziona */
+  .toggle-select {
+    cursor: pointer;
+    font-weight: 500;
+    transition: color var(--transition-speed) ease;
+  }
+
+  .toggle-select:hover {
+    color: var(--primary-color);
+  }
+
+  /* Bottone Invia */
+  #submitFiltri {
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-weight: 600;
+    transition: background-color var(--transition-speed) ease;
+  }
+
+  #submitFiltri:hover {
+    background-color: #00245d;
+    box-shadow: (0 4px 8px rgba(0, 0, 0, 0.2));
+  }  
+
+  .small {
+      font-size: 0.875rem;
+    }
+
+    .mx-2 {
+      margin-left: 0.5rem;
+      margin-right: 0.5rem;
+    }
         </style>
     </head>
     <body>
@@ -149,123 +296,87 @@
               <button id="cancelButton" class="conf-button">Annulla</button>
           </div>
     	</div>
-                    
-            <div id="boxFiltri" class="modal fade show" tabindex="-1" style="display:none;">
-                <div class="modal-dialog modal-lg modal-dialog-centered">
-                    <div class="boxFiltri-content modal-content">
-                        <div class="modal-header border-0">
-                            <span id="closePopup" class="btn-close"></span>
+        
+        <div id="boxFiltri" class="modal fade show" tabindex="-1" style="display:none;">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                <!-- Header della Modal -->
+                <div class="modal-header">
+                    <h5 class="modal-title">Filtra Classi Coinvolte</h5>
+                    <span id="closePopup" class="btn-close"></span>
+                </div>
+
+                <!-- Corpo della Modal -->
+                <div class="modal-body">
+                    <h4>Classi Coinvolte</h4>
+
+                    <!-- Sezione Indirizzo -->
+                    <div id="indirizzo" class="mb-4">
+                    <p class="section-title">Indirizzo</p>
+                    <div class="checkbox-group">
+                        <div class="form-check form-check-custom">
+                        <input type="checkbox" class="form-check-input" id="informatico" name="indirizzo" value="Informatico" onchange="mostraClassi()">
+                        <label for="informatico" class="form-check-label">Informatico</label>
                         </div>
-                        
-                        <div id="colonnaBis" class="modal-body">
-                            <h4 class="text-center mb-4">Classi coinvolte</h4>
-
-                            <div id="indirizzo" class="mb-4">
-                                <p class="mb-3">Indirizzo</p>
-
-                                <div class="content">
-                                    <div class="table-responsive">
-                                        <table class="table table-borderless mb-0">
-                                            <tr>
-                                                <td class="w-75"><label for="informatico" class="form-label mb-0">Informatico:</label></td>
-                                                <td class="w-25">
-                                                    <div class="form-check">
-                                                        <input type="checkbox" class="form-check-input" id="informatico" name="indirizzo" value="Informatico" onchange="mostraClassi()">
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="w-75"><label for="relazioni_internazionali" class="form-label mb-0">Relazioni Int:</label></td>
-                                                <td class="w-25">
-                                                    <div class="form-check">
-                                                        <input type="checkbox" class="form-check-input" id="relazioni_internazionali" name="indirizzo" value="Relazioni Internazionali" onchange="mostraClassi()">
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="w-75"><label for="grafico" class="form-label mb-0">Grafico:</label></td>
-                                                <td class="w-25">
-                                                    <div class="form-check">
-                                                        <input type="checkbox" class="form-check-input" id="grafico" name="indirizzo" value="Grafico" onchange="mostraClassi()">
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="w-75"><label for="scienze_applicate" class="form-label mb-0">Scienze App:</label></td>
-                                                <td class="w-25">
-                                                    <div class="form-check">
-                                                        <input type="checkbox" class="form-check-input" id="scienze_applicate" name="indirizzo" value="Scienze Applicate" onchange="mostraClassi()">
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="annata" class="mb-4">
-                                <p class="mb-3">Annata</p>
-
-                                <div class="content">
-                                    <div class="table-responsive">
-                                        <table class="table table-borderless mb-0">
-                                            <tr>
-                                                <td class="w-75"><label for="annata1" class="form-label mb-0">I:</label></td>
-                                                <td class="w-25">
-                                                    <div class="form-check">
-                                                        <input type="checkbox" class="form-check-input" id="annata1" name="annata" value="1" onchange="mostraClassi()">
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="w-75"><label for="annata2" class="form-label mb-0">II:</label></td>
-                                                <td class="w-25">
-                                                    <div class="form-check">
-                                                        <input type="checkbox" class="form-check-input" id="annata2" name="annata" value="2" onchange="mostraClassi()">
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="w-75"><label for="annata3" class="form-label mb-0">III:</label></td>
-                                                <td class="w-25">
-                                                    <div class="form-check">
-                                                        <input type="checkbox" class="form-check-input" id="annata3" name="annata" value="3" onchange="mostraClassi()">
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="w-75"><label for="annata4" class="form-label mb-0">IV:</label></td>
-                                                <td class="w-25">
-                                                    <div class="form-check">
-                                                        <input type="checkbox" class="form-check-input" id="annata4" name="annata" value="4" onchange="mostraClassi()">
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="w-75"><label for="annat5" class="form-label mb-0">V:</label></td>
-                                                <td class="w-25">
-                                                    <div class="form-check">
-                                                        <input type="checkbox" class="form-check-input" id="annat5" name="annata" value="5" onchange="mostraClassi()">
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <p class="fw-bold mb-2">Classi filtrate</p>
-                            <div id="classi-selezionate" class="border rounded p-2 bg-light"></div>
-                            
-                            <div class="d-flex justify-content-between mt-3">
-                                <p id="selectAll" class="text-primary mb-0 text-decoration-none" style="cursor: pointer;" onclick="selezionaCheckbox()">Seleziona tutti</p>
-                                <p id="deselectAll" class="text-primary mb-0 text-decoration-none" style="display:none; cursor: pointer;" onclick="deselezionaCheckbox()">Deseleziona tutti</p>
-                            </div>
-                            
-                            <input type='button' value='Invia' id='submitFiltri' onclick="prendiClassi();" class="btn btn-primary w-100 mt-4">
+                        <div class="form-check form-check-custom">
+                        <input type="checkbox" class="form-check-input" id="relazioni_internazionali" name="indirizzo" value="Relazioni Internazionali" onchange="mostraClassi()">
+                        <label for="relazioni_internazionali" class="form-check-label">Relazioni Int.</label>
+                        </div>
+                        <div class="form-check form-check-custom">
+                        <input type="checkbox" class="form-check-input" id="grafico" name="indirizzo" value="Grafico" onchange="mostraClassi()">
+                        <label for="grafico" class="form-check-label">Grafico</label>
+                        </div>
+                        <div class="form-check form-check-custom">
+                        <input type="checkbox" class="form-check-input" id="scienze_applicate" name="indirizzo" value="Scienze Applicate" onchange="mostraClassi()">
+                        <label for="scienze_applicate" class="form-check-label">Scienze App.</label>
                         </div>
                     </div>
+                    </div>
+                    <br>
+                    <!-- Sezione Annata -->
+                    <div id="annata" class="mb-4">
+                    <p class="section-title">Annata</p>
+                    <div class="checkbox-group">
+                        <div class="form-check form-check-custom">
+                        <input type="checkbox" class="form-check-input" id="annata1" name="annata" value="1" onchange="mostraClassi()">
+                        <label for="annata1" class="form-check-label">I</label>
+                        </div>
+                        <div class="form-check form-check-custom">
+                        <input type="checkbox" class="form-check-input" id="annata2" name="annata" value="2" onchange="mostraClassi()">
+                        <label for="annata2" class="form-check-label">II</label>
+                        </div>
+                        <div class="form-check form-check-custom">
+                        <input type="checkbox" class="form-check-input" id="annata3" name="annata" value="3" onchange="mostraClassi()">
+                        <label for="annata3" class="form-check-label">III</label>
+                        </div>
+                        <div class="form-check form-check-custom">
+                        <input type="checkbox" class="form-check-input" id="annata4" name="annata" value="4" onchange="mostraClassi()">
+                        <label for="annata4" class="form-check-label">IV</label>
+                        </div>
+                        <div class="form-check form-check-custom">
+                        <input type="checkbox" class="form-check-input" id="annat5" name="annata" value="5" onchange="mostraClassi()">
+                        <label for="annat5" class="form-check-label">V</label>
+                        </div>
+                    </div>
+                    </div>
+                    <br>
+                    <!-- Sezione Classi Filtrate: ora centrata e con larghezza limitata -->
+                    <p class="section-title">Classi filtrate</p>
+                    <div id="classi-filtrate-container">
+                    <div id="classi-selezionate"></div>
+                    </div>
+
+                    <!-- Bottoni Seleziona/Deseleziona -->
+                    <div class="d-flex justify-content-center mt-3">
+                    <p id="selectAll" class="toggle-select text-primary mx-2 small" onclick="selezionaCheckbox()">Seleziona tutti</p>
+                    <p id="deselectAll" class="toggle-select text-primary mx-2 small" style="display:none;" onclick="deselezionaCheckbox()">Deseleziona tutti</p>
+                    </div>
+
+                    <!-- Bottone Invia -->
+                    <button type="button" id="submitFiltri" onclick="prendiClassi();" class="btn btn-primary w-100 mt-4">Invia</button>
                 </div>
+                </div>
+            </div>
             </div>
         
         <form id="projectForm" action="dettaglio_rendi.php" method="POST" style="display:none;">

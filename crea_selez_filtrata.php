@@ -1,7 +1,8 @@
 <?php
 require_once("db.php");
 $classi = $_POST["classi"];
-$progetti = [];
+// Utilizziamo un array associativo per evitare duplicati fin da subito
+$progetti_associativi = [];
 $oreCurr = 0;
 $oreExtraCurr = 0;
 $oreSorv = 0;
@@ -11,8 +12,12 @@ $orePom = 0;
 
 if (!empty($classi)) {
     foreach ($classi as $classe) {
-        $anno = (int) $classe[0];
-        $sezione = substr($classe, 1);
+        // Gestione di eventuali classi con più cifre (es. "10A")
+        // Se l'anno può avere due cifre, occorre adattare la logica
+        // Qui assumiamo che l'anno occupi i primi caratteri numerici
+        preg_match('/^(\d+)/', $classe, $matches);
+        $anno = isset($matches[1]) ? (int)$matches[1] : 0;
+        $sezione = substr($classe, strlen($matches[1])); // il resto della stringa
 
         $stmt = $conn->prepare("SELECT DISTINCT p.id
                                 FROM progetti p
@@ -23,16 +28,22 @@ if (!empty($classi)) {
         $stmt->bindParam(':sezione', $sezione, PDO::PARAM_STR);
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_COLUMN);
-        $progetti = array_merge($progetti, $result);
+        // Aggiungiamo gli ID in un array associativo per evitare duplicazioni
+        foreach ($result as $idProgetto) {
+            $progetti_associativi[$idProgetto] = $idProgetto;
+        }
     }
 } else {
     $stmt = $conn->prepare("SELECT id FROM progetti");
     $stmt->execute();
-    $progetti = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    $result = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    foreach ($result as $idProgetto) {
+        $progetti_associativi[$idProgetto] = $idProgetto;
+    }
 }
 
-$ArrPrj = array_unique($progetti);
-$ArrPrj = array_values($ArrPrj);
+// Convertiamo l'array associativo in un array indicizzato
+$ArrPrj = array_values($progetti_associativi);
 
 // Tabella Progetti
 $table = "<table class='tbVisua' id='firstTb'>
@@ -88,19 +99,18 @@ foreach ($ArrPrj as $progetto) {
     // Ore Progetto
     $stmProgetti = $conn->prepare("
     SELECT 
-    p.id AS ID_Progetto, 
-    p.titolo AS Titolo_Progetto,
-    COALESCE(SUM(ri.oreProgettazione), 0) AS TotaleOreProgettazione,
-    COALESCE(SUM(ri.oreCurricolari), 0) AS TotaleOreCurricolari,
-    COALESCE(SUM(ri.oreExtraCurricolari), 0) AS TotaleOreExtraCurricolari,
-    COALESCE(SUM(ri.oreSorveglianza), 0) AS TotaleOreSorveglianza
+      p.id AS ID_Progetto, 
+      p.titolo AS Titolo_Progetto,
+      COALESCE(SUM(ri.oreProgettazione), 0) AS TotaleOreProgettazione,
+      COALESCE(SUM(ri.oreCurricolari), 0) AS TotaleOreCurricolari,
+      COALESCE(SUM(ri.oreExtraCurricolari), 0) AS TotaleOreExtraCurricolari,
+      COALESCE(SUM(ri.oreSorveglianza), 0) AS TotaleOreSorveglianza
     FROM 
-    progetti p
+      progetti p
     LEFT JOIN progetti_risorse pr ON p.id = pr.fk_progetti
     LEFT JOIN risorseInterne ri ON pr.fk_risorsaInterna = ri.id
     WHERE p.id = :id
-    GROUP BY 
-    p.id, p.titolo
+    GROUP BY p.id, p.titolo
     ");
     $stmProgetti->bindParam(':id', $progetto, PDO::PARAM_INT);
     $stmProgetti->execute();
@@ -117,17 +127,17 @@ foreach ($ArrPrj as $progetto) {
     }
 
     // Calcolo ore totali
-    $stm2 = $conn->prepare("SELECT DISTINCT SUM(r.oreCurricolari)AS oreCurricolari, 
-                            SUM(r.oreExtraCurricolari)AS oreExtraCurricolari, 
-                            SUM(r.oreSorveglianza)AS oreSorveglianza, 
-                            SUM(r.oreProgettazione)AS oreProgettazione
+    $stm2 = $conn->prepare("SELECT DISTINCT SUM(r.oreCurricolari) AS oreCurricolari, 
+                            SUM(r.oreExtraCurricolari) AS oreExtraCurricolari, 
+                            SUM(r.oreSorveglianza) AS oreSorveglianza, 
+                            SUM(r.oreProgettazione) AS oreProgettazione
                             FROM risorseInterne r, progetti_risorse pr
                             WHERE pr.fk_progetti = :project
                             AND pr.fk_risorsaInterna = r.id");
     $stm2->bindParam(':project', $progetto, PDO::PARAM_INT);
     $stm2->execute();
     $oreTot = $stm2->fetchAll();    
-     
+    
     foreach($oreTot as $ore) {
         $oreCurr += $ore['oreCurricolari'];
         $oreExtraCurr += $ore['oreExtraCurricolari'];
@@ -186,7 +196,7 @@ echo json_encode(array(
     'risposta' => $table, 
     'risposta2' => $tableOre, 
     'risposta3' => $tableMatPom, 
-    'risposta4' => $progetti,
+    'risposta4' => $ArrPrj,
     'risposta_ore_progetti' => $tableProgettiOre
 ));
 ?>
