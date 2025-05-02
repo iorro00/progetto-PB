@@ -258,162 +258,146 @@ function mostraClassi() {
       
  
  
- 
-if(window.location.href.includes('dati_iniziali.php')){
-     
-     let page=1;
-     const check = document.getElementById("nuovo");
-     const check2 = document.getElementById("nonNuovo");
-     const next = document.getElementById('avanti');
-     const submit = document.getElementById('submit');
-     const back = document.getElementById('indietro');
-     const page1 = document.getElementById('colonna');
-     const page2 = document.getElementById('colonna2');
-     const page3 = document.getElementById('colonna3');
-     const page4 = document.getElementById('colonna4');
-     const page5 = document.getElementById('colonna5');
-     const page6 = document.getElementById('colonna6');
-     const page7 = document.getElementById('colonna7');
-     
-     next.addEventListener('click', function() {
-     page++;
-         switch(page){
-             case 2:{
-                 page1.style.display="none";
-                 page2.style.display="flex";
-                 back.style.display="flex";
-             }break;
-             case 3:{
-                 page2.style.display="none";
-                 page3.style.display="flex";
-             }break;
-             case 4:{
-                 page3.style.display="none";
-                 page4.style.display="flex";
-             }break;
-             case 5:{
-                 page4.style.display="none";
-                 page5.style.display="flex";
-             }break;
-             case 6:{
-                 page5.style.display="none";
-                 page6.style.display="flex";
-             }break;
-             case 7:{
-                 page6.style.display="none";
-                 page7.style.display="flex";
-                 next.style.display="none";
-                 submit.style.display="inline-block";
-             }break;
-         }
-     }); 
-     
-     back.addEventListener('click', function() {
-     page--;
-     switch(page){
-             case 1:{
-                 page2.style.display="none";
-                 page1.style.display="flex";
-                 back.style.display="none";
-             }break;
-             case 2:{
-                 page2.style.display="flex";
-                 page3.style.display="none";
-             }break;
-             case 3:{
-                 page3.style.display="flex";
-                 page4.style.display="none";
-             }break;
-             case 4:{
-                 page4.style.display="flex";
-                 page5.style.display="none";
-             }break;
-             case 5:{
-                 page5.style.display="flex";
-                 page6.style.display="none";
-             }break;
-             case 6:{
-                 page6.style.display="flex";
-                 page7.style.display="none";
-                 submit.style.display="none";
-                 next.style.display="inline-block";
-             }break;
-         }
-     
-     }); 
- 
-     document.addEventListener("DOMContentLoaded", function() {
-        const form = document.getElementById('mainForm');
-        const requiredFields = ['title', 'dip', 'strutt', 'percorsi', 'orient','oreMat','orePom'];
-        const requiredFields2 = ['contesto', 'obb', 'attiv', 'metodi', 'temp', 'verifica', 'document'];
-        let errorMessageDisplayed = false; // Flag per tracciare se il messaggio di errore è stato visualizzato
-    
-        form.addEventListener("submit", function(event) {
-            const selectedCheckboxes = document.querySelectorAll('input[class="classe"]:checked');
-            let isValid = true;
-    
-            requiredFields.forEach(fieldName => {
-                    const input = document.getElementById(fieldName);
-                    if (!input.value.trim()) {
-                        input.style.border = "2px solid red";
-                        isValid = false;
-                    } else {
-                        input.style.border = "";
-                    }
-                }); 
-                
-            if (check.checked) {
-                requiredFields2.forEach(fieldName => {
-                    const input = document.getElementById(fieldName);
-                    if (!input.value.trim()) {
-                        input.style.border = "2px solid red";
-                        isValid = false;
-                    } else {
-                        input.style.border = "";
-                    }
-                });
-            }
-            const selectedCheckboxArray = [];
+// ——— script.js ———
 
-        // Itera su ogni checkbox selezionata e aggiungi alla selectedCheckboxArray
-        selectedCheckboxes.forEach(checkbox => {
-            selectedCheckboxArray.push(checkbox);
-        });
-        
-        if (selectedCheckboxArray.length == 0)isValid = false;
-                
-    
-            if (!isValid) {
-                event.preventDefault(); // Blocca l'invio del modulo se ci sono campi vuoti
-    
-                if (!errorMessageDisplayed) {
-                    const errorMessage = document.createElement("div");
-                    errorMessage.textContent = "Inserisci tutti gli elementi obbligatori.";
-                    errorMessage.className = "error-message";
-                    form.prepend(errorMessage); // Aggiungo il messaggio di errore sopra il modulo
-                    errorMessageDisplayed = true; // Imposto il flag su true
-                }
-            } else {
-                // Rimuovo il messaggio di errore se tutti i campi obbligatori sono compilati
-                const existingErrorMessage = form.querySelector(".error-message");
-                if (existingErrorMessage) {
-                    form.removeChild(existingErrorMessage);
-                    errorMessageDisplayed = false; // Resetta il flag
-                }
-            }
-            
-            //Resetto lo stile del bordo quando l'utente modifica un campo obbligatorio
-            requiredFields.forEach(fieldName => {
-                const input = document.getElementById(fieldName);
-                input.addEventListener("input", function() {
-                    if (input.value.trim()) {
-                        input.style.border = ""; // Rimuovo il bordo rosso se il campo è compilato
-                    }
-                });
+// TUTTO il tuo codice AJAX, generaRisorse(), logout(), mostraClassi(), ecc.
+// (lascia inalterate le altre funzioni che già funzionano)
+
+// Ora la parte di “dati_iniziali.php”:
+// RIMUOVI qualunque altro blocco if(window.location.href…) precedente!
+// Questo è l’unico che deve gestire pagina e validazione.
+if (window.location.href.includes('dati_iniziali.php')) {
+    let page = 1;
+  
+    // Riferimenti ai bottoni
+    let nextBtn   = document.getElementById('avanti');
+    const backBtn   = document.getElementById('indietro');
+    const submitBtn = document.getElementById('submit');
+  
+    // Colonne
+    const pageEls = {
+      1: document.getElementById('colonna'),
+      2: document.getElementById('colonna2'),
+      3: document.getElementById('colonna3'),
+      4: document.getElementById('colonna4'),
+      5: document.getElementById('colonna5'),
+      6: document.getElementById('colonna6'),
+      7: document.getElementById('colonna7')
+    };
+    const maxPage = Object.keys(pageEls).length; // 7
+  
+    // Rimuovo eventuali listener precedenti e cloni il button
+    nextBtn.replaceWith(nextBtn.cloneNode(true));
+    nextBtn = document.getElementById('avanti');
+  
+    // Funzione che mostra/nasconde le colonne e i bottoni
+    function renderPage(p) {
+      console.log("renderPage → page =", p);
+      for (let i = 1; i <= maxPage; i++) {
+        pageEls[i].style.display = i === p
+          ? (i === 1 ? 'flex' : 'block')
+          : 'none';
+      }
+      backBtn.style.display   = p > 1        ? 'inline-block' : 'none';
+      nextBtn.style.display   = p < maxPage  ? 'inline-block' : 'none';
+      submitBtn.style.display = p === maxPage ? 'inline-block' : 'none';
+  
+      // in più, forzo la classe d-none su nextBtn se ultima pagina
+      nextBtn.classList.toggle('d-none', p === maxPage);
+  
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  
+    // Funzione di validazione per ogni pagina
+    function validatePage(p) {
+      let valid = true;
+      const col = pageEls[p];
+  
+      // ripulisco precedenti .is-invalid
+      col.querySelectorAll('.is-invalid')
+         .forEach(el => el.classList.remove('is-invalid'));
+  
+      switch (p) {
+        case 1: {
+          const title = col.querySelector('#title');
+          const dip   = col.querySelector('#dip');
+          if (!title.value.trim()) { title.classList.add('is-invalid'); valid = false; }
+          if (!dip.value)           { dip.classList.add('is-invalid');   valid = false; }
+        } break;
+  
+        case 2: {
+          const indirizzi = col.querySelectorAll('#indirizzo .form-check-input');
+          if (![...indirizzi].some(i => i.checked)) {
+            indirizzi.forEach(i => i.classList.add('is-invalid'));
+            valid = false;
+          }
+  
+          const classi = col.querySelectorAll('#classi-selezionate input[type="checkbox"]');
+          if (classi.length === 0 || ![...classi].some(c => c.checked)) {
+            classi.forEach(c => c.classList.add('is-invalid'));
+            valid = false;
+          }
+        } break;
+  
+        case 3: {
+          const competenze = col.querySelectorAll('#tbComp .form-check-input');
+          if (![...competenze].some(c => c.checked)) {
+            competenze.forEach(c => c.classList.add('is-invalid'));
+            valid = false;
+          }
+        } break;
+  
+        case 4: {
+          ['strutt','percorsi','orient'].forEach(id => {
+            const sel = col.querySelector('#' + id);
+            if (!sel.value) { sel.classList.add('is-invalid'); valid = false; }
+          });
+        } break;
+  
+        case 5: {
+          ['contesto','obb','attiv','metodi','luog','verifica','document']
+            .forEach(id => {
+              const ta = col.querySelector('#' + id);
+              if (!ta.value.trim()) {
+                ta.classList.add('is-invalid');
+                valid = false;
+              }
             });
-        });
- });
-}
+  
+          const months = col.querySelectorAll('#tbMesi input[type="checkbox"]');
+          if (![...months].some(m => m.checked)) {
+            months.forEach(m => m.classList.add('is-invalid'));
+            valid = false;
+          }
+        } break;
+  
+        // case 6: nessuna validazione
+      }
+  
+      return valid;
+    }
+  
+    // Listener “Avanti”
+    nextBtn.addEventListener('click', function(e) {
+      if (!validatePage(page)) {
+        e.preventDefault();
+        pageEls[page].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+      page++;
+      renderPage(page);
+    });
+  
+    // Listener “Indietro”
+    backBtn.addEventListener('click', function() {
+      page--;
+      renderPage(page);
+    });
+  
+    // Mostra iniziale
+    renderPage(page);
+  }
+    
 
 function logout() {
     // URL di logout di Google

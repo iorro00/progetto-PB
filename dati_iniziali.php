@@ -72,6 +72,8 @@
             .card-header {
                 background-color: #00245d;
             }
+
+            .is-invalid { border-color: #dc3545; }
         </style>
     </head>
 <body>
@@ -541,7 +543,7 @@
         <button type="button" id="indietro" class="btn btn-secondary" style="display:none">
             <i class="bi bi-arrow-left"></i> Indietro
         </button>
-        <button type="button" id="avanti" class="btn btn-primary">
+        <button type="button" id="avanti" class="btn btn-primary" >
             Avanti <i class="bi bi-arrow-right"></i>
         </button>
         <button type="submit" id="submit" class="btn btn-success" style="display:none">
@@ -556,5 +558,6 @@
     function tornaIndietro() {
         window.location.href = "ins_visua_project.php";
     }
+
 </script>
 </html>
