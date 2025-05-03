@@ -31,7 +31,7 @@
                 <div id="g_id_onload"
                     data-client_id="529378518049-94dm7aej1qsjtu84natojb905i23h38e.apps.googleusercontent.com"
                     data-ux_mode="redirect"
-                    data-login_uri="https://ptofbuilder.altervista.org/ins_visua_project.php"
+                    data-login_uri="https://ptofbuilder.altervista.org/ins_visua_projct.php"
                     >
                 </div>
                 <div class="g_id_signin" 
