@@ -76,6 +76,7 @@ function renderProjectDetails($pdf, $projectId, $conn) {
         SELECT * 
         FROM progetti
         INNER JOIN docenteReferente ON docenteReferente.id = progetti.fk_docenteReferente 
+        INNER JOIN progetti_classi ON progetti.id = progetti_classi.fk_progetto
         WHERE progetti.id = :id
         GROUP BY progetti.id
     ");
@@ -100,7 +101,7 @@ function renderProjectDetails($pdf, $projectId, $conn) {
 
         // Classi coinvolte
         $stmt2 = $conn->prepare("
-            SELECT c.anno_classe, c.sezione 
+            SELECT c.anno_classe, c.sezione
             FROM progetti_classi pc
             JOIN classi c ON pc.fk_classe = c.id
             WHERE pc.fk_progetto = :id
