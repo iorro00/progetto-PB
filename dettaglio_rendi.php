@@ -132,6 +132,7 @@
             
             $stmComp = $conn->prepare("SELECT c.descrizione FROM progetti_competenze p, competenze c WHERE p.fk_progetti =".$value["id"]." AND p.fk_competenze = c.id");
         	$stmComp->execute();
+            $competenze = $stmComp->fetchAll();
         	$contaComp = 0;
               foreach($competenze as $cmp){
               	$contaComp++;
@@ -199,7 +200,7 @@
 ?>        
     <div style=display:none id='boxOreEff'>
     		<div class="boxOreEff-content">
-              <span id="closePopup">&times;</span>
+              <span id="closePopup" class="pippi">&times;</span>
               <p id="subTitPopup">Ore effettive</p>
               	<div id="contenuto"></div>
         	</div>

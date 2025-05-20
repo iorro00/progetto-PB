@@ -589,19 +589,24 @@ textarea::placeholder {
     transition-duration: 0.4s;
 }
 
-#submit2{
-	display: inline-block;
-    margin-left: 20px;
-    width: 90px;
-    height: 45px;
+/* Bottone invio nel popup */
+#submit2, #submit3 {
+    display: inline-block;
+    width: 110px;
+    height: 44px;
+    margin: 18px auto 0 auto;
+    font-size: 17px;
+    border-radius: 9px;
+    background-color: #00245d;
+    color: #fff;
+    border: none;
+    font-weight: 600;
     cursor: pointer;
-    background-color: white;
-    border: 2px solid #0b5ed7;
-    color: black;
-    transition-duration: 0.4s;
-    float: right;
-    margin-top: 35px;
+    transition: background 0.23s, color 0.15s;
+    box-shadow: 0 2.5px 8px rgba(0, 36, 93, 0.07);
+    float: none;
 }
+
 #page-title {
     font-family: 'Playfair Display', serif;
     font-size: 1.7rem;
@@ -646,33 +651,33 @@ text-align: center;
 flex-grow: 1;
 }
 
-#submit3{
-	display: inline-block;
-    margin-left: 20px;
-    width: 90px;
-    height: 45px;
-    cursor: pointer;
-    background-color: white;
-    border: 2px solid #0b5ed7;
-    color: black;
-    transition-duration: 0.4s;
-    float: right;
-    margin-top: 120px;
-}
+
 
 #submit:hover{
 	background-color: #00245d;
     color: white;
 }
 
-#submit2:hover{
-	background-color: #00245d;
-    color: white;
+#submit2:hover, #submit3:hover {
+    background: #244b91;
+    color: #f5f8fa;
 }
 
-#submit3:hover{
-	background-color: #00245d;
-    color: white;
+@media (max-width: 600px) {
+  .boxOreEff-content {
+    width: 97vw;
+    max-width: 98vw;
+    min-width: 0;
+    padding: 13px 3vw;
+  }
+    #tbOreEff label, #tbOreEff td {
+        font-size: 14px;
+    }
+    #submit2, #submit3 {
+        width: 95px;
+        height: 40px;
+        font-size: 15px;
+    }
 }
 
 #selectAll, #deselectAll, #butt-filtri, #submitFiltri{ 
@@ -757,30 +762,50 @@ flex-grow: 1;
 
 #boxOreEff {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5); /* Sfoca il resto della pagina */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    backdrop-filter: blur(2px); /* Imposta il livello di sfocatura */
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.5);
+    z-index: 1200;
+    backdrop-filter: blur(2px);
+    animation: fadeInBg 0.25s;
 }
 
-.boxOreEff-content {
-    background: white;
-    margin-top: 125px;
-    width: 70%;
-    height: 55%;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
-    position: relative;
-    margin-left: auto;
-    margin-right: auto;
+/* Animazione fade in */
+@keyframes fadeInBg {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
+
+/* Popup Box */
+.boxOreEff-content {
+    background: #fff;
+    margin-top: 50px;
+    margin-left: 32%;
+    width: 70%;
+    max-width: 650px;
+    min-width: 340px;
+    height: auto;
+    min-height: 320px;
+    padding: 38px 44px 32px 44px;
+    border-radius: 18px;
+    box-shadow: 0 10px 35px rgba(0, 32, 61, 0.14);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    overflow-y: auto;
+    max-height: 88vh;
+    animation: fadeInPopup 0.28s;
+} 
+
+
+
+@keyframes fadeInPopup {
+    from { transform: translateY(40px) scale(0.95); opacity: 0; }
+    to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+
 
 #boxFiltri {
     position: fixed;
@@ -810,20 +835,34 @@ flex-grow: 1;
 }
 
 
-#closePopup{
+/* Pulsante close */
+#closePopup.pippi{
     position: absolute;
-    top: 10px;
-    right: 20px;
-    font-size: 25px;
-    cursor: pointer;
+    top: 16px;
+    right: 26px;
+    font-size: 30px;
+    font-weight: 600;
     color: #00245d;
-}
-#closePopup:hover{
-    color:red;
+    cursor: pointer;
+    transition: color 0.2s;
+    z-index: 10;
 }
 
-#subTitPopup{
-	 margin-top: 0px;
+
+#closePopup.pippi:hover {
+    color: #c0392b;
+    background: #f2f3f6;
+    border-radius: 50%;
+}
+
+#subTitPopup {
+    font-size: 22px;
+    color: #00245d;
+    font-weight: 600;
+    font-family: 'Playfair Display', serif;
+    margin-top: 0;
+    margin-bottom: 18px;
+    text-align: center;
 }
 
 .subLab{
@@ -837,12 +876,45 @@ flex-grow: 1;
     margin-right: auto;
 }
 
-#tbOreEff{
-	margin:auto;
+/* Tabella form nel popup */
+#tbOreEff {
+    width: 100%;
+    margin: 0 auto 10px auto;
+    border-collapse: separate;
+    border-spacing: 0 8px;
 }
 
-#tbOreEff td{
-	text-align:right;
+#tbOreEff td {
+    padding: 7px 12px;
+    font-size: 15.5px;
+}
+
+#tbOreEff label {
+    color: #00245d;
+    font-weight: 500;
+    font-size: 16px;
+    font-family: 'Source Sans Pro', 'Merriweather sans', Arial, sans-serif;
+}
+
+
+
+/* Input nel popup */
+#tbOreEff input[type="number"] {
+    width: 90px;
+    padding: 7px 10px;
+    font-size: 15.5px;
+    border-radius: 7px;
+    border: 1px solid #bcc4d5;
+    margin-left: 5px;
+    margin-right: 0;
+    background: #f7fafc;
+    color: #00245d;
+    transition: border-color 0.2s;
+}
+
+#tbOreEff input[type="number"]:focus {
+    border: 2px solid #00245d;
+    background: #fff;
 }
 
 #popupOverlay{

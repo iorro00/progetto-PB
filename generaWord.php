@@ -114,8 +114,10 @@ function renderProjectDetails($pdf, $projectId, $conn) {
             $classi .= $c['anno_classe'] . $c['sezione'] . ", ";
         }
         $classi = rtrim($classi, ', ');
-        $pdf->Cell(0,8, utf8_decode($classi), 0,1,'L');
+        // Stampa con MultiCell per andare a capo in automatico!
+        $pdf->MultiCell(0, 8, utf8_decode($classi), 0, 'L');
         $pdf->Ln(3);
+
 
         // Altri campi
         $fields = [

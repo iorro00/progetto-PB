@@ -10,6 +10,11 @@ $oreProg = 0;
 $oreMat = 0;
 $orePom = 0;
 
+$TotCurrEff = 0;
+$TotExtraCurrEff = 0;
+$TotSorvEff = 0;
+$TotProgEff = 0;
+
 if (!empty($classi)) {
     foreach ($classi as $classe) {
         // Gestione di eventuali classi con più cifre (es. "10A")
@@ -63,6 +68,15 @@ $tableProgettiOre = "<table class='tbVisua' id='tbProgettiOre'>
                         <th>Ore Extracurricolari</th>
                         <th>Ore Sorveglianza</th>
                     </tr>";
+// tab ore eff
+$tableOreEffettive = "<table class='tbVisua' id='tbOreEffettive'>
+<tr>
+<th>Titolo Progetto</th>
+<th>Ore Curricolari Effettive</th>
+<th>Ore Extra-Curricolari Effettive</th>
+<th>Ore Sorveglianza Effettive</th>
+<th>Ore Progettazione Effettive</th>
+</tr>";
 
 foreach ($ArrPrj as $progetto) {
     // Dettagli Progetto
@@ -158,9 +172,51 @@ foreach ($ArrPrj as $progetto) {
         $oreMat += $omp["ore_mattina"];
         $orePom += $omp["ore_pomeriggio"];
     }
-}
 
+     $stmEff = $conn->prepare("SELECT 
+        COALESCE(SUM(ri.OreCurricolariEffettive),0) AS TotCurrEff,
+        COALESCE(SUM(ri.OreExtraCurricolariEffettive),0) AS TotExtraCurrEff,
+        COALESCE(SUM(ri.OreSorveglianzaEffettive),0) AS TotSorvEff,
+        COALESCE(SUM(ri.OreProgettazioneEffettive),0) AS TotProgEff
+        FROM risorseInterne ri
+        JOIN progetti_risorse pr ON ri.id = pr.fk_risorsaInterna
+        WHERE pr.fk_progetti = :id");
+    $stmEff->bindParam(':id', $progetto, PDO::PARAM_INT);
+    $stmEff->execute();
+    $eff = $stmEff->fetch();
+
+    $tableOreEffettive .= "<tr>
+    <td>".$row["titolo"]."</td>
+    <td>".$eff["TotCurrEff"]."</td>
+    <td>".$eff["TotExtraCurrEff"]."</td>
+    <td>".$eff["TotSorvEff"]."</td>
+    <td>".$eff["TotProgEff"]."</td>
+    </tr>";
+
+    $TotCurrEff += $eff["TotCurrEff"];
+    $TotExtraCurrEff += $eff["TotExtraCurrEff"];
+    $TotSorvEff += $eff["TotSorvEff"];
+    $TotProgEff += $eff["TotProgEff"];
+
+
+
+}
 $table .= "</table>";
+$tableOreEffettive .= "</table>";
+
+$tableOreEffTotali = "<table class='tbVisua' id='tbOreEffTotali'>
+<tr>
+<th>Totale Ore Curricolari Effettive</th>
+<th>Totale Ore Extra-Curricolari Effettive</th>
+<th>Totale Ore Sorveglianza Effettive</th>
+<th>Totale Ore Progettazione Effettive</th>
+</tr>
+<tr>
+<td>$TotCurrEff</td>
+<td>$TotExtraCurrEff</td>
+<td>$TotSorvEff</td>
+<td>$TotProgEff</td>
+</tr></table>";
 $tableProgettiOre .= "</table>";
 
 // Tabella Ore Totali
@@ -194,9 +250,11 @@ $tableMatPom = "<table class='tbVisua' id='tbMatPom'>
 echo json_encode(array(
     'success' => true, 
     'risposta' => $table, 
-    'risposta2' => $tableOre, 
-    'risposta3' => $tableMatPom, 
-    'risposta4' => $ArrPrj,
-    'risposta_ore_progetti' => $tableProgettiOre
+    'risposta_ore_progetti' => $tableProgettiOre,
+    'risposta_ore_totali' => $tableOre,
+    'risposta_ore_effettive' => $tableOreEffettive,
+    'risposta_ore_eff_totali' => $tableOreEffTotali,
+    'risposta_mat_pom' => $tableMatPom,
+    'risposta_progetti' => $ArrPrj
 ));
 ?>

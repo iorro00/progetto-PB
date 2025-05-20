@@ -226,28 +226,45 @@
       margin-right: 0.5rem;
     }
 
+    #closePopupp{
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 25px;
+    cursor: pointer;
+    color: #00245d;
+}
+#closePopupp:hover{
+    color:red;
+}
+
             
         </style>
     </head>
+
 <body>
+    <!-- Barra superiore con pulsante indietro, titolo e pulsante filtri -->
     <div id="top-bar" class="top-bar d-flex align-items-center p-3" style="display: none;">
             <button id="back-btn" class="btn btn-light me-3" onclick="torna()">←</button>
             <p id="title" class="m-0 mx-auto text-white">ELENCO PROGETTI IIS BLAISE PASCAL</p>
-            <button id="butt-filtri" >Filtri</button>
+            <button id="butt-filtri">Filtri</button>
     </div>
     <br><br><br><br>
-        <div class="container position-relative pt-4">
-            <!-- Info Circle with Tooltip -->
-            <div class="info-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cliccare su un qualsiasi progetto per visualizzarne i dettagli.">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#00245d" class="bi bi-info-circle-fill" viewBox="0 0 16 16">
-                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
-                </svg>
-            </div>
+    
+    <!-- Container con icona informativa e tooltip -->
+    <div class="container position-relative pt-4">
+        <div class="info-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cliccare su un qualsiasi progetto per visualizzarne i dettagli.">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#00245d" class="bi bi-info-circle-fill" viewBox="0 0 16 16">
+                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+            </svg>
         </div>
+    </div>
 
-            <?php
+    <?php
+        // Inclusione del file di connessione al database
         require_once("db.php");
-        // Prima tabella (progetti) - rimane invariata
+        
+        // PRIMA TABELLA: Elenco progetti con titolo, dipartimento e docente referente
         $table = "<table class='tbVisua' id='firstTb'>
                     <tr>
                         <th style= display:none;></th>
@@ -256,19 +273,26 @@
                         <th>Docente Referente</th>
                     </tr>";
 
+        // Query per ottenere i progetti ordinati per titolo
         $stm = $conn->prepare("SELECT id, titolo, fk_dipartimento, fk_docenteReferente FROM progetti order by titolo asc");
         $stm->execute();
         $result = $stm->fetchAll();
                 
+        // Iterazione sui risultati per popolare la tabella
         foreach($result as $row) {
+            // Elemento nascosto per memorizzare l'ID del progetto (usato per JavaScript)
+            echo "<p get-progetti='".$row['id']."' style=display:none class='progett'></p>";
+            
+            // Recupero del nome del dipartimento
             $varDip = '';
             if($row["fk_dipartimento"]){
-                echo "<p get-progetti='".$row['id']."' style=display:none class='progett'></p>";
                 $dip = $conn->prepare("SELECT nome FROM dipartimento WHERE id = ?");
                 $dip->execute([$row["fk_dipartimento"]]);
                 $resultDip = $dip->fetch();
                 $varDip = $resultDip["nome"];
             }
+            
+            // Recupero del nome del docente referente
             $varRef = '';
             if($row["fk_docenteReferente"]){
                 $ref = $conn->prepare("SELECT nominativo FROM docenteReferente WHERE id = ?");
@@ -276,6 +300,8 @@
                 $resultRef = $ref->fetch();
                 $varRef = $resultRef["nominativo"];
             }
+            
+            // Costruzione della riga della tabella
             $table .= "<tr>
                         <td style= display:none; >" . $row["id"] . "</td>
                         <td>" . $row["titolo"] . "</td>
@@ -287,11 +313,12 @@
         echo $table;
 
 
-        //query per sapere se è docente e quindi visualizzare le ore
+        // Verifica se l'utente corrente è un docente per mostrare tabelle specifiche
         $stm0 = $conn->prepare("SELECT id FROM docenteReferente WHERE nominativo = ?");
         $stm0->execute([$_SESSION["nominativo"]]);
         $idDoc = $stm0->fetch(PDO::FETCH_ASSOC);
 
+    // SECONDA TABELLA: Dettaglio delle ore per progetto (visibile solo se NON docente)
     if (!$idDoc) {
         $tableProgettiOre = "<table class='tbVisua' id='tbProgettiOre'>
         <tr>
@@ -302,6 +329,7 @@
             <th>Ore Sorveglianza</th>
         </tr>";
 
+        // Query per calcolare il totale delle ore per ogni progetto
         $stmProgetti = $conn->prepare("
         SELECT 
         p.id AS ID_Progetto, 
@@ -322,6 +350,7 @@
         $stmProgetti->execute();
         $progetti = $stmProgetti->fetchAll();
 
+        // Popola la tabella con i risultati
         foreach($progetti as $progetto) {
         $tableProgettiOre .= "<tr>
                     <td>" . $progetto["Titolo_Progetto"] . "</td>
@@ -336,9 +365,7 @@
     }
 
 
-
-
-        // Terza tabella (ore totali) - ora con somma senza duplicati
+        // TERZA TABELLA: Riepilogo delle ore totali per tutti i progetti
         $tableOre = "<table class='tbVisua' id='tbOre'>
                         <tr>
                             <th>Ore totali Progettazione</th>
@@ -348,6 +375,7 @@
                         </tr>
                         <tr>";
 
+        // Query per calcolare il totale complessivo di tutte le ore
         $stm = $conn->prepare("
             SELECT 
                 COALESCE(SUM(ri.oreProgettazione), 0) AS oreProgettazione,
@@ -360,6 +388,7 @@
         $stm->execute();
         $row = $stm->fetch();
 
+        // Popola la tabella con i risultati
         $tableOre .= "<td>".$row["oreProgettazione"]."</td>";
         $tableOre .= "<td>".$row["oreCurricolari"]."</td>";
         $tableOre .= "<td>".$row["oreExtraCurricolari"]."</td>";
@@ -368,43 +397,133 @@
         $tableOre .= "</tr></table>";
         echo $tableOre;
 
+        if (!$idDoc) {
+                        // Query per calcolare le ore effettive per ogni progetto
+        $stmOreEffettive = $conn->prepare("
+            SELECT 
+                p.id AS ID_Progetto,
+                p.titolo AS Titolo_Progetto,
+                COALESCE(SUM(ri.OreCurricolariEffettive), 0) AS TotOreCurrEff,
+                COALESCE(SUM(ri.OreExtraCurricolariEffettive), 0) AS TotOreExtraCurrEff,
+                COALESCE(SUM(ri.OreSorveglianzaEffettive), 0) AS TotOreSorvEff,
+                COALESCE(SUM(ri.OreProgettazioneEffettive), 0) AS TotOreProgEff
+            FROM 
+                progetti p
+            LEFT JOIN progetti_risorse pr ON p.id = pr.fk_progetti
+            LEFT JOIN risorseInterne ri ON pr.fk_risorsaInterna = ri.id
+            GROUP BY 
+                p.id, p.titolo
+            ORDER BY 
+                p.titolo
+        ");
 
-        
-        $tableMatPom = "<table class='tbVisua' id='tbMatPom'>
-                        <tr>
-                            <th>Ore totali Mattino</th>
-                            <th>Ore totali Pomeriggio</th>
-                        </tr>
-                        <tr>"; 
-        $stm3 = $conn->prepare("SELECT *
-                             FROM progetti_classi
-                             GROUP BY fk_progetto");
-     	$stm3->execute();
-     	$oreMP = $stm3->fetchAll();
-        $oreMattino = 0;
-        $orePomeriggio = 0;
+        $stmOreEffettive->execute();
+        $oreEffettive = $stmOreEffettive->fetchAll();
 
-        foreach($oreMP as $row)
-        {
-        	$oreMattino += $row["ore_mattina"];
-            $orePomeriggio += $row["ore_pomeriggio"];
+        // Creazione della tabella delle ore effettive
+        $tableOreEffettive = "<table class='tbVisua' id='tbOreEffettive'>
+            <tr>
+                <th>Titolo Progetto</th>
+                <th>Ore Curricolari Effettive</th>
+                <th>Ore Extra-Curricolari Effettive</th>
+                <th>Ore Sorveglianza Effettive</th>
+                <th>Ore Progettazione Effettive</th>
+            </tr>";
+
+        foreach($oreEffettive as $eff) {
+            $tableOreEffettive .= "<tr>
+                <td>" . htmlspecialchars($eff["Titolo_Progetto"], ENT_QUOTES, 'UTF-8') . "</td>
+                <td>" . $eff["TotOreCurrEff"] . "</td>
+                <td>" . $eff["TotOreExtraCurrEff"] . "</td>
+                <td>" . $eff["TotOreSorvEff"] . "</td>
+                <td>" . $eff["TotOreProgEff"] . "</td>
+            </tr>";
         }
-        $tableMatPom .= "<td>".$oreMattino."</td>";
-        $tableMatPom .= "<td>".$orePomeriggio."</td>";
-        $tableMatPom .= "</tr></table>";
-        echo $tableMatPom;
+
+        $tableOreEffettive .= "</table>";
+
+        // Visualizza la tabella delle ore effettive
+        echo $tableOreEffettive;
+}
+
+        // Creazione della tabella delle ore effettive totali
+        $tableOreEffTotali = "<table class='tbVisua' id='tbOreEffTotali'>
+        <tr>
+            <th>Totale Ore Curricolari Effettive</th>
+            <th>Totale Ore Extra-Curricolari Effettive</th>
+            <th>Totale Ore Sorveglianza Effettive</th>
+            <th>Totale Ore Progettazione Effettive</th>
+        </tr>
+        <tr>";
+
+        $stmTotEff = $conn->prepare("
+            SELECT 
+                COALESCE(SUM(ri.OreCurricolariEffettive), 0) AS TotCurrEff,
+                COALESCE(SUM(ri.OreExtraCurricolariEffettive), 0) AS TotExtraCurrEff,
+                COALESCE(SUM(ri.OreSorveglianzaEffettive), 0) AS TotSorvEff,
+                COALESCE(SUM(ri.OreProgettazioneEffettive), 0) AS TotProgEff
+            FROM risorseInterne ri
+            JOIN progetti_risorse pr ON ri.id = pr.fk_risorsaInterna
+        ");
+        $stmTotEff->execute();
+        $rowEff = $stmTotEff->fetch();
+
+        $tableOreEffTotali .= "<td>".$rowEff["TotCurrEff"]."</td>";
+        $tableOreEffTotali .= "<td>".$rowEff["TotExtraCurrEff"]."</td>";
+        $tableOreEffTotali .= "<td>".$rowEff["TotSorvEff"]."</td>";
+        $tableOreEffTotali .= "<td>".$rowEff["TotProgEff"]."</td>";
+        $tableOreEffTotali .= "</tr></table>";
+        echo $tableOreEffTotali;
+
+                
+                // QUARTA TABELLA: Riepilogo delle ore mattino e pomeriggio
+                $tableMatPom = "<table class='tbVisua' id='tbMatPom'>
+                                <tr>
+                                    <th>Ore totali Mattino</th>
+                                    <th>Ore totali Pomeriggio</th>
+                                </tr>
+                                <tr>"; 
+                
+                // Query per ottenere i dati delle classi raggruppati per progetto
+                $stm3 = $conn->prepare("SELECT *
+                                    FROM progetti_classi
+                                    GROUP BY fk_progetto");
+                $stm3->execute();
+                $oreMP = $stm3->fetchAll();
+                $oreMattino = 0;
+                $orePomeriggio = 0;
+
+                // Calcola il totale delle ore mattino e pomeriggio
+                foreach($oreMP as $row)
+                {
+                    $oreMattino += $row["ore_mattina"];
+                    $orePomeriggio += $row["ore_pomeriggio"];
+                }
+                
+                // Popola la tabella con i risultati
+                $tableMatPom .= "<td>".$oreMattino."</td>";
+                $tableMatPom .= "<td>".$orePomeriggio."</td>";
+                $tableMatPom .= "</tr></table>";
+                echo $tableMatPom;
+
+
+
 
     ?>
+    
+    <!-- Form nascosto per reindirizzare al dettaglio progetto -->
     <form id="projectForm" action="dettaglio_progetto.php" method="POST" style="display:none;">
     	<input type="hidden" name="id" id="projectIdTaken">
 	</form>
+    
+    <!-- Modal per i filtri delle classi (inizialmente nascosto) -->
     <div id="boxFiltri" class="modal fade show" tabindex="-1" style="display:none;">
             <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content">
                 <!-- Header della Modal -->
                 <div class="modal-header">
                     <h5 class="modal-title">Filtra Classi Coinvolte</h5>
-                    <span id="closePopup" class="btn-close"></span>
+                    <span id="closePopupp" class="btn-close"></span>
                 </div>
 
                 <!-- Corpo della Modal -->
@@ -461,45 +580,50 @@
                     </div>
                     </div>
                     <br>
-                    <!-- Sezione Classi Filtrate: ora centrata e con larghezza limitata -->
+                    <!-- Visualizzazione delle classi filtrate -->
                     <p class="section-title">Classi filtrate</p>
                     <div id="classi-filtrate-container">
                     <div id="classi-selezionate"></div>
                     </div>
 
-                    <!-- Bottoni Seleziona/Deseleziona -->
+                    <!-- Bottoni per selezionare/deselezionare tutti i filtri -->
                     <div class="d-flex justify-content-center mt-3">
                     <p id="selectAll" class="toggle-select text-primary mx-2 small" onclick="selezionaCheckbox()">Seleziona tutti</p>
                     <p id="deselectAll" class="toggle-select text-primary mx-2 small" style="display:none;" onclick="deselezionaCheckbox()">Deseleziona tutti</p>
                     </div>
 
-                    <!-- Bottone Invia -->
+                    <!-- Bottone per inviare i filtri -->
                     <button type="button" id="submitFiltri" onclick="prendiClassi();" class="btn btn-primary w-100 mt-4">Invia</button>
                 </div>
                 </div>
             </div>
             </div>
-    <button id="butt-stampa" >Stampa</button>
+    
+    <!-- Pulsante per generare e stampare il report -->
+    <button id="butt-stampa">Stampa</button>
 
     <br>
 </body>
 <script> 
+    // Riferimenti agli elementi DOM per il popup e stampa
     const openPopupButton = document.getElementById('butt-filtri');
     const stampa = document.getElementById('butt-stampa');
-    const closePopupButton = document.getElementById('closePopup');
+    const closePopupButton = document.getElementById('closePopupp');
     const popup = document.getElementById('boxFiltri');
-    var progetti=[];
     
+    // Array per memorizzare gli ID dei progetti
+    var progetti = [];
+    
+    // Raccoglie tutti gli ID dei progetti dai tag <p> nascosti
     var progettiElements = document.querySelectorAll('p[get-progetti]');
 
-    // Itera sugli elementi trovati
+    // Itera sugli elementi trovati e li aggiunge all'array progetti
     progettiElements.forEach(function(element) {
-        // Recupera il valore dell'attributo get-progetti e aggiungilo all'array
         var idProgetto = element.getAttribute('get-progetti');
         progetti.push(idProgetto);
     });
     
-    // Funzione per collegare gli event listener alle righe della tabella
+    // Funzione per collegare gli event listener alle righe della tabella progetti
     function attachClickEventsToRows() {
         var rows = document.querySelectorAll('#firstTb tr');
         
@@ -508,7 +632,9 @@
                 var cells = row.querySelectorAll('td');
                 cells.forEach(function(cell) {
                     cell.addEventListener('click', function() {
+                        // Quando si clicca su una cella, ottiene l'ID del progetto dalla prima colonna
                         var projectId = row.cells[0].innerHTML;
+                        // Imposta il valore nel form nascosto e lo invia
                         document.getElementById('projectIdTaken').value = projectId;
                         document.getElementById('projectForm').submit();
                     });
@@ -517,22 +643,24 @@
         });
     }
     
-    // Aggiungi gli event listener alle righe della tabella all'avvio
+    // Inizializza gli event listener quando il DOM è caricato
     document.addEventListener('DOMContentLoaded', function() {
         attachClickEventsToRows();
     });
     
+    // Gestione evento click sul pulsante stampa
     stampa.addEventListener('click', function() {
+        // Richiesta AJAX per generare un file Word con i progetti
         jQuery.ajax({
           type: 'POST',
           url: "generaWord.php",
           dataType: 'json',
           data: {
-              'idProjects': progetti,
+              'idProjects': progetti, // Passa l'array degli ID progetti
           },
           success: function(response) {
               if (response.success) {
-                  // Reindirizza il browser per scaricare il PDF
+                  // Reindirizza il browser per scaricare il file
                   window.location.href = response.pdf_url;
               } else {
                   console.log("Errore: " + response.success);
@@ -542,51 +670,59 @@
               console.log("Errore nella chiamata AJAX: " + error);
           }
       });
-
     });
     
-function evento(id){
-	document.getElementById('projectIdTaken').value = id; // Imposta l'ID del progetto nel campo nascosto
-    document.getElementById('projectForm').submit(); // Invia il modulo
-}
+    // Funzione per gestire il click su un progetto specifico (navigazione al dettaglio)
+    function evento(id){
+        document.getElementById('projectIdTaken').value = id; // Imposta l'ID del progetto nel campo nascosto
+        document.getElementById('projectForm').submit(); // Invia il modulo per andare alla pagina di dettaglio
+    }
 
+    // Chiusura del popup dei filtri
     closePopupButton.addEventListener('click', function() {
         popup.style.display="none";
     });
     
+    // Funzione per disabilitare lo scroll quando il popup è aperto
     function disableScroll() {
         // Calcola la larghezza della barra di scorrimento
         var scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 
-        // Aggiungi una classe al body per bloccare lo scroll e compensare la larghezza della barra di scorrimento
+        // Blocca lo scroll e compensa la larghezza della barra di scorrimento
         document.body.style.overflow = 'hidden';
         document.body.style.paddingRight = scrollbarWidth + 'px';
     }
 
+    // Funzione per riabilitare lo scroll quando il popup è chiuso
     function enableScroll() {
-        // Rimuovi la classe che blocca lo scroll e ripristina il padding destro
         document.body.style.overflow = '';
         document.body.style.paddingRight = '';
     }
 
+    // Gestione evento apertura popup filtri
     openPopupButton.addEventListener('click', function() {
         popup.style.display='inline-block';
-        disableScroll(); // Blocca lo scroll quando il popup viene aperto
+        disableScroll(); // Blocca lo scroll
     });
 
+    // Gestione evento chiusura popup filtri
     closePopupButton.addEventListener('click', function() {
         popup.style.display='none';
-        enableScroll(); // Consenti nuovamente lo scroll quando il popup viene chiuso
+        enableScroll(); // Riabilita lo scroll
     });
 
+    // Funzione per raccogliere le classi selezionate e filtrare la tabella
     function prendiClassi() {
         var classiSelezionate = [];
+        // Raccoglie tutti i checkbox selezionati nel contenitore delle classi
         var checkboxes = document.querySelectorAll('#classi-selezionate input[type="checkbox"]:checked');
 
+        // Aggiunge i valori selezionati all'array
         checkboxes.forEach(function(checkbox) {
             classiSelezionate.push(checkbox.value);
         });
         
+        // Richiesta AJAX per filtrare i progetti in base alle classi selezionate
         jQuery.ajax({
             type: 'POST',
             url: "crea_selez_filtrata.php",
@@ -596,15 +732,19 @@ function evento(id){
             },
             success: function(response) {                        
                 if (response.success) {
-                    $('#firstTb').html(response.risposta);
-                    $('#tbProgettiOre').html(response.risposta_ore_progetti);
-                    $('#tbOre').html(response.risposta2);
-                    $('#tbMatPom').html(response.risposta3);
+                    // Aggiorna le tabelle con i dati filtrati
+                    $('#firstTb').html(response.risposta); // Tabella elenco progetti
+                    $('#tbProgettiOre').html(response.risposta_ore_progetti); // Ore teoriche per progetto
+                    $('#tbOre').html(response.risposta_ore_totali); // Ore totali teoriche
+                    $('#tbOreEffettive').html(response.risposta_ore_effettive); // Ore effettive per progetto
+                    $('#tbOreEffTotali').html(response.risposta_ore_eff_totali); // Ore effettive totali
+                    $('#tbMatPom').html(response.risposta_mat_pom); // Mattino/pomeriggio
+
                     
                     // Aggiorna l'array dei progetti per la stampa
-                    progetti = response.risposta4;
+                    progetti = response.risposta_progetti;
                     
-                    // Ricollegare gli event listener alle righe della tabella
+                    // Ricollegare gli event listener alle righe della tabella filtrata
                     attachClickEventsToRows();
                 } else {
                     console.error("Errore: " + response.message);
@@ -615,19 +755,22 @@ function evento(id){
             }
         });
 
-        popup.style.display = 'none'; // chiudi il popup
+        // Chiude il popup e riabilita lo scroll
+        popup.style.display = 'none';
         enableScroll();
     }
 
+    // Funzione per tornare alla pagina precedente
     function torna(){
         window.location.href = "ins_visua_project.php";
     }
 
+    // Inizializza i tooltip di Bootstrap
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        });
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
             
 </script>
-<script  src="script.js"></script>
+<script src="script.js"></script>
 </html>
