@@ -1,7 +1,7 @@
 <?php
 require_once("db.php");
 $classi = $_POST["classi"];
-// Utilizziamo un array associativo per evitare duplicati fin da subito
+// Array associativo per evitare duplicati
 $progetti_associativi = [];
 $oreCurr = 0;
 $oreExtraCurr = 0;
@@ -15,11 +15,9 @@ $TotExtraCurrEff = 0;
 $TotSorvEff = 0;
 $TotProgEff = 0;
 
+// --- RACCOLTA ID PROGETTI FILTRATI ---
 if (!empty($classi)) {
     foreach ($classi as $classe) {
-        // Gestione di eventuali classi con più cifre (es. "10A")
-        // Se l'anno può avere due cifre, occorre adattare la logica
-        // Qui assumiamo che l'anno occupi i primi caratteri numerici
         preg_match('/^(\d+)/', $classe, $matches);
         $anno = isset($matches[1]) ? (int)$matches[1] : 0;
         $sezione = substr($classe, strlen($matches[1])); // il resto della stringa
@@ -33,7 +31,6 @@ if (!empty($classi)) {
         $stmt->bindParam(':sezione', $sezione, PDO::PARAM_STR);
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_COLUMN);
-        // Aggiungiamo gli ID in un array associativo per evitare duplicazioni
         foreach ($result as $idProgetto) {
             $progetti_associativi[$idProgetto] = $idProgetto;
         }
@@ -47,7 +44,6 @@ if (!empty($classi)) {
     }
 }
 
-// Convertiamo l'array associativo in un array indicizzato
 $ArrPrj = array_values($progetti_associativi);
 
 // Tabella Progetti
@@ -68,7 +64,8 @@ $tableProgettiOre = "<table class='tbVisua' id='tbProgettiOre'>
                         <th>Ore Extracurricolari</th>
                         <th>Ore Sorveglianza</th>
                     </tr>";
-// tab ore eff
+
+// Tabella Ore Effettive interne
 $tableOreEffettive = "<table class='tbVisua' id='tbOreEffettive'>
 <tr>
 <th>Titolo Progetto</th>
@@ -76,6 +73,22 @@ $tableOreEffettive = "<table class='tbVisua' id='tbOreEffettive'>
 <th>Ore Extra-Curricolari Effettive</th>
 <th>Ore Sorveglianza Effettive</th>
 <th>Ore Progettazione Effettive</th>
+</tr>";
+
+// Tabella Risorse Esterne PREVISTE
+$tableOreEst = "<table class='tbVisua' id='tbOreEst'>
+<tr>
+    <th>Titolo Progetto</th>
+    <th>Totale Ore Docenza Esterna</th>
+    <th>Totale Costo Previsto (€)</th>
+</tr>";
+
+// Tabella Risorse Esterne EFFETTIVE
+$tableOreEstEff = "<table class='tbVisua' id='tbOreEstEffettive'>
+<tr>
+    <th>Titolo Progetto</th>
+    <th>Ore Docenza Effettive</th>
+    <th>Costo Effettivo (€)</th>
 </tr>";
 
 foreach ($ArrPrj as $progetto) {
@@ -110,7 +123,7 @@ foreach ($ArrPrj as $progetto) {
                    </tr>";
     }
 
-    // Ore Progetto
+    // Ore Progetto (INTERNE)
     $stmProgetti = $conn->prepare("
     SELECT 
       p.id AS ID_Progetto, 
@@ -140,7 +153,7 @@ foreach ($ArrPrj as $progetto) {
                 </tr>";
     }
 
-    // Calcolo ore totali
+    // Calcolo ore totali interne
     $stm2 = $conn->prepare("SELECT DISTINCT SUM(r.oreCurricolari) AS oreCurricolari, 
                             SUM(r.oreExtraCurricolari) AS oreExtraCurricolari, 
                             SUM(r.oreSorveglianza) AS oreSorveglianza, 
@@ -173,7 +186,8 @@ foreach ($ArrPrj as $progetto) {
         $orePom += $omp["ore_pomeriggio"];
     }
 
-     $stmEff = $conn->prepare("SELECT 
+    // Ore Effettive (INTERNE)
+    $stmEff = $conn->prepare("SELECT 
         COALESCE(SUM(ri.OreCurricolariEffettive),0) AS TotCurrEff,
         COALESCE(SUM(ri.OreExtraCurricolariEffettive),0) AS TotExtraCurrEff,
         COALESCE(SUM(ri.OreSorveglianzaEffettive),0) AS TotSorvEff,
@@ -198,28 +212,67 @@ foreach ($ArrPrj as $progetto) {
     $TotSorvEff += $eff["TotSorvEff"];
     $TotProgEff += $eff["TotProgEff"];
 
+    // --- RISORSE ESTERNE: PREVISTE
+    $stmEst = $conn->prepare("
+        SELECT 
+            p.id AS ID_Progetto, 
+            p.titolo AS Titolo_Progetto,
+            COALESCE(SUM(re.oreDocenza), 0) AS TotOreDocenza,
+            COALESCE(SUM(re.costoPrevisto), 0) AS TotCostoPrevisto
+        FROM 
+            progetti p
+        LEFT JOIN progetti_risorse pr ON p.id = pr.fk_progetti
+        LEFT JOIN risorseEsterne re ON pr.fk_risorsaEsterna = re.id
+        WHERE p.id = :id
+        GROUP BY p.id, p.titolo
+    ");
+    $stmEst->bindParam(':id', $progetto, PDO::PARAM_INT);
+    $stmEst->execute();
+    $esterni = $stmEst->fetchAll();
 
+    foreach($esterni as $est) {
+        $tableOreEst .= "<tr>
+            <td>" . htmlspecialchars($est["Titolo_Progetto"], ENT_QUOTES, 'UTF-8') . "</td>
+            <td>" . $est["TotOreDocenza"] . "</td>
+            <td>" . number_format($est["TotCostoPrevisto"], 2, ',', '.') . "</td>
+        </tr>";
+    }
 
+    // --- RISORSE ESTERNE: EFFETTIVE
+    $stmEstEff = $conn->prepare("
+        SELECT 
+            p.id AS ID_Progetto,
+            p.titolo AS Titolo_Progetto,
+            COALESCE(SUM(re.oreDocenzaEffettive), 0) AS TotOreDocEff,
+            COALESCE(SUM(re.costoEffettivo), 0) AS TotCostoEff
+        FROM 
+            progetti p
+        LEFT JOIN progetti_risorse pr ON p.id = pr.fk_progetti
+        LEFT JOIN risorseEsterne re ON pr.fk_risorsaEsterna = re.id
+        WHERE p.id = :id
+        GROUP BY p.id, p.titolo
+    ");
+    $stmEstEff->bindParam(':id', $progetto, PDO::PARAM_INT);
+    $stmEstEff->execute();
+    $oreEstEffettive = $stmEstEff->fetchAll();
+
+    foreach($oreEstEffettive as $estEff) {
+        $tableOreEstEff .= "<tr>
+            <td>" . htmlspecialchars($estEff["Titolo_Progetto"], ENT_QUOTES, 'UTF-8') . "</td>
+            <td>" . $estEff["TotOreDocEff"] . "</td>
+            <td>" . number_format($estEff["TotCostoEff"], 2, ',', '.') . "</td>
+        </tr>";
+    }
 }
+
+// Chiudi le tabelle
 $table .= "</table>";
-$tableOreEffettive .= "</table>";
-
-$tableOreEffTotali = "<table class='tbVisua' id='tbOreEffTotali'>
-<tr>
-<th>Totale Ore Curricolari Effettive</th>
-<th>Totale Ore Extra-Curricolari Effettive</th>
-<th>Totale Ore Sorveglianza Effettive</th>
-<th>Totale Ore Progettazione Effettive</th>
-</tr>
-<tr>
-<td>$TotCurrEff</td>
-<td>$TotExtraCurrEff</td>
-<td>$TotSorvEff</td>
-<td>$TotProgEff</td>
-</tr></table>";
 $tableProgettiOre .= "</table>";
+$tableOreEffettive .= "</table>";
+$tableOreEst .= "</table>";
+$tableOreEstEff .= "</table>";
 
-// Tabella Ore Totali
+// Tabella Ore Totali interne
 $tableOre = "<table class='tbVisua' id='tbOre'>
                 <tr>
                     <th>Ore totali Progettazione</th>
@@ -247,6 +300,73 @@ $tableMatPom = "<table class='tbVisua' id='tbMatPom'>
                 </tr>
             </table>";
 
+// Tabella Ore Effettive Totali interne
+$tableOreEffTotali = "<table class='tbVisua' id='tbOreEffTotali'>
+<tr>
+<th>Totale Ore Curricolari Effettive</th>
+<th>Totale Ore Extra-Curricolari Effettive</th>
+<th>Totale Ore Sorveglianza Effettive</th>
+<th>Totale Ore Progettazione Effettive</th>
+</tr>
+<tr>
+<td>$TotCurrEff</td>
+<td>$TotExtraCurrEff</td>
+<td>$TotSorvEff</td>
+<td>$TotProgEff</td>
+</tr></table>";
+
+// --- TOTALE GENERALE RISORSE ESTERNE (previsto) ---
+$tableOreEstTot = "<table class='tbVisua' id='tbOreEstTotali'>
+    <tr>
+        <th>Totale Ore Docenza Esterna</th>
+        <th>Totale Costo Previsto (€)</th>
+    </tr>
+    <tr>";
+
+if(count($ArrPrj)>0){
+    $placeholders = implode(',', array_fill(0, count($ArrPrj), '?'));
+    $stmEstTot = $conn->prepare("
+        SELECT 
+            COALESCE(SUM(re.oreDocenza), 0) AS TotOreDocenza,
+            COALESCE(SUM(re.costoPrevisto), 0) AS TotCostoPrevisto
+        FROM risorseEsterne re
+        JOIN progetti_risorse pr ON re.id = pr.fk_risorsaEsterna
+        WHERE pr.fk_progetti IN ($placeholders)
+    ");
+    $stmEstTot->execute($ArrPrj);
+    $estTot = $stmEstTot->fetch();
+} else {
+    $estTot = ["TotOreDocenza"=>0,"TotCostoPrevisto"=>0];
+}
+$tableOreEstTot .= "<td>".$estTot["TotOreDocenza"]."</td>";
+$tableOreEstTot .= "<td>".number_format($estTot["TotCostoPrevisto"], 2, ',', '.')."</td></tr></table>";
+
+// --- TOTALE GENERALE RISORSE ESTERNE (effettivo) ---
+$tableOreEstEffTot = "<table class='tbVisua' id='tbOreEstEffTotali'>
+    <tr>
+        <th>Totale Ore Docenza Effettive</th>
+        <th>Totale Costo Effettivo (€)</th>
+    </tr>
+    <tr>";
+
+if(count($ArrPrj)>0){
+    $placeholders = implode(',', array_fill(0, count($ArrPrj), '?'));
+    $stmTotEstEff = $conn->prepare("
+        SELECT 
+            COALESCE(SUM(re.oreDocenzaEffettive), 0) AS TotOreDocEff,
+            COALESCE(SUM(re.costoEffettivo), 0) AS TotCostoEff
+        FROM risorseEsterne re
+        JOIN progetti_risorse pr ON re.id = pr.fk_risorsaEsterna
+        WHERE pr.fk_progetti IN ($placeholders)
+    ");
+    $stmTotEstEff->execute($ArrPrj);
+    $rowEstEff = $stmTotEstEff->fetch();
+} else {
+    $rowEstEff = ["TotOreDocEff"=>0,"TotCostoEff"=>0];
+}
+$tableOreEstEffTot .= "<td>".$rowEstEff["TotOreDocEff"]."</td>";
+$tableOreEstEffTot .= "<td>".number_format($rowEstEff["TotCostoEff"], 2, ',', '.')."</td></tr></table>";
+
 echo json_encode(array(
     'success' => true, 
     'risposta' => $table, 
@@ -255,6 +375,10 @@ echo json_encode(array(
     'risposta_ore_effettive' => $tableOreEffettive,
     'risposta_ore_eff_totali' => $tableOreEffTotali,
     'risposta_mat_pom' => $tableMatPom,
-    'risposta_progetti' => $ArrPrj
+    'risposta_progetti' => $ArrPrj,
+    'risposta_ore_est' => $tableOreEst,
+    'risposta_ore_est_tot' => $tableOreEstTot,
+    'risposta_ore_est_eff' => $tableOreEstEff,
+    'risposta_ore_est_eff_tot' => $tableOreEstEffTot
 ));
 ?>

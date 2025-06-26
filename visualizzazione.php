@@ -312,6 +312,38 @@
         $table .= "</table>";
         echo $table;
 
+                        //Riepilogo delle ore mattino e pomeriggio
+                $tableMatPom = "<table class='tbVisua' id='tbMatPom'>
+                                <tr>
+                                    <th>Ore totali Mattino</th>
+                                    <th>Ore totali Pomeriggio</th>
+                                </tr>
+                                <tr>"; 
+                
+                // Query per ottenere i dati delle classi raggruppati per progetto
+                $stm3 = $conn->prepare("SELECT *
+                                    FROM progetti_classi
+                                    GROUP BY fk_progetto");
+                $stm3->execute();
+                $oreMP = $stm3->fetchAll();
+                $oreMattino = 0;
+                $orePomeriggio = 0;
+
+                // Calcola il totale delle ore mattino e pomeriggio
+                foreach($oreMP as $row)
+                {
+                    $oreMattino += $row["ore_mattina"];
+                    $orePomeriggio += $row["ore_pomeriggio"];
+                }
+                
+                // Popola la tabella con i risultati
+                $tableMatPom .= "<td>".$oreMattino."</td>";
+                $tableMatPom .= "<td>".$orePomeriggio."</td>";
+                $tableMatPom .= "</tr></table>";
+                echo $tableMatPom;
+
+        echo "<p class='subTit' style='margin-top:40px;'>Risorse Interne - Valori Previsti</p>";
+
 
         // Verifica se l'utente corrente è un docente per mostrare tabelle specifiche
         $stm0 = $conn->prepare("SELECT id FROM docenteReferente WHERE nominativo = ?");
@@ -396,7 +428,7 @@
 
         $tableOre .= "</tr></table>";
         echo $tableOre;
-
+        echo "<p class='subTit' style='margin-top:40px;'>Risorse Interne - Valori Rendicontati</p>";
         if (!$idDoc) {
                         // Query per calcolare le ore effettive per ogni progetto
         $stmOreEffettive = $conn->prepare("
@@ -475,36 +507,131 @@
         $tableOreEffTotali .= "</tr></table>";
         echo $tableOreEffTotali;
 
-                
-                // QUARTA TABELLA: Riepilogo delle ore mattino e pomeriggio
-                $tableMatPom = "<table class='tbVisua' id='tbMatPom'>
-                                <tr>
-                                    <th>Ore totali Mattino</th>
-                                    <th>Ore totali Pomeriggio</th>
-                                </tr>
-                                <tr>"; 
-                
-                // Query per ottenere i dati delle classi raggruppati per progetto
-                $stm3 = $conn->prepare("SELECT *
-                                    FROM progetti_classi
-                                    GROUP BY fk_progetto");
-                $stm3->execute();
-                $oreMP = $stm3->fetchAll();
-                $oreMattino = 0;
-                $orePomeriggio = 0;
+        echo "<p class='subTit' style='margin-top:40px;'>Risorse Esterne - Valori Previsti</p>";
 
-                // Calcola il totale delle ore mattino e pomeriggio
-                foreach($oreMP as $row)
-                {
-                    $oreMattino += $row["ore_mattina"];
-                    $orePomeriggio += $row["ore_pomeriggio"];
-                }
-                
-                // Popola la tabella con i risultati
-                $tableMatPom .= "<td>".$oreMattino."</td>";
-                $tableMatPom .= "<td>".$orePomeriggio."</td>";
-                $tableMatPom .= "</tr></table>";
-                echo $tableMatPom;
+        if (!$idDoc) {
+            // --- RIEPILOGO ORE DOCENZA E COSTI RISORSE ESTERNE (per progetto) ---
+            $tableOreEst = "<table class='tbVisua' id='tbOreEst'>
+                <tr>
+                    <th>Titolo Progetto</th>
+                    <th>Totale Ore Docenza Esterna</th>
+                    <th>Totale Costo Previsto</th>
+                </tr>";
+
+            $stmEst = $conn->prepare("
+                SELECT 
+                    p.id AS ID_Progetto, 
+                    p.titolo AS Titolo_Progetto,
+                    COALESCE(SUM(re.oreDocenza), 0) AS TotOreDocenza,
+                    COALESCE(SUM(re.costoPrevisto), 0) AS TotCostoPrevisto
+                FROM 
+                    progetti p
+                LEFT JOIN progetti_risorse pr ON p.id = pr.fk_progetti
+                LEFT JOIN risorseEsterne re ON pr.fk_risorsaEsterna = re.id
+                GROUP BY p.id, p.titolo
+                ORDER BY p.titolo
+            ");
+            $stmEst->execute();
+            $esterni = $stmEst->fetchAll();
+
+            foreach($esterni as $est) {
+                $tableOreEst .= "<tr>
+                    <td>" . htmlspecialchars($est["Titolo_Progetto"], ENT_QUOTES, 'UTF-8') . "</td>
+                    <td>" . $est["TotOreDocenza"] . "</td>
+                    <td>" . $est["TotCostoPrevisto"] . " €</td>
+                </tr>";
+            }
+            $tableOreEst .= "</table>";
+            echo $tableOreEst;
+        }
+        
+
+        // --- TOTALE GENERALE DOCENZA ESTERNA E COSTO PREVISTO ---
+            $tableOreEstTot = "<table class='tbVisua' id='tbOreEstTotali'>
+                <tr>
+                    <th>Totale Ore Docenza Esterna</th>
+                    <th>Totale Costo Previsto</th>
+                </tr>
+                <tr>";
+
+            $stmEstTot = $conn->prepare("
+                SELECT 
+                    COALESCE(SUM(re.oreDocenza), 0) AS TotOreDocenza,
+                    COALESCE(SUM(re.costoPrevisto), 0) AS TotCostoPrevisto
+                FROM risorseEsterne re
+                JOIN progetti_risorse pr ON re.id = pr.fk_risorsaEsterna
+            ");
+            $stmEstTot->execute();
+            $estTot = $stmEstTot->fetch();
+
+            $tableOreEstTot .= "<td>".$estTot["TotOreDocenza"]."</td>";
+            $tableOreEstTot .= "<td>".$estTot["TotCostoPrevisto"]." €</td>";
+            $tableOreEstTot .= "</tr></table>";
+            echo $tableOreEstTot;
+
+            echo "<p class='subTit' style='margin-top:40px;'>Risorse Esterne - Valori Rendicontati</p>";
+        if (!$idDoc) {
+                        // Tabella: Ore docenza effettive e costo effettivo per progetto
+            $tableOreEstEff = "<table class='tbVisua' id='tbOreEstEffettive'>
+                <tr>
+                    <th>Titolo Progetto</th>
+                    <th>Ore Docenza Effettive</th>
+                    <th>Costo Effettivo (€)</th>
+                </tr>";
+
+            $stmEstEff = $conn->prepare("
+                SELECT 
+                    p.id AS ID_Progetto,
+                    p.titolo AS Titolo_Progetto,
+                    COALESCE(SUM(re.oreDocenzaEffettive), 0) AS TotOreDocEff,
+                    COALESCE(SUM(re.costoEffettivo), 0) AS TotCostoEff
+                FROM 
+                    progetti p
+                LEFT JOIN progetti_risorse pr ON p.id = pr.fk_progetti
+                LEFT JOIN risorseEsterne re ON pr.fk_risorsaEsterna = re.id
+                GROUP BY 
+                    p.id, p.titolo
+                ORDER BY 
+                    p.titolo
+            ");
+            $stmEstEff->execute();
+            $oreEstEffettive = $stmEstEff->fetchAll();
+
+            foreach($oreEstEffettive as $estEff) {
+                $tableOreEstEff .= "<tr>
+                    <td>" . htmlspecialchars($estEff["Titolo_Progetto"], ENT_QUOTES, 'UTF-8') . "</td>
+                    <td>" . $estEff["TotOreDocEff"] . "</td>
+                    <td>" . number_format($estEff["TotCostoEff"], 2, ',', '.') . "</td>
+                </tr>";
+            }
+            $tableOreEstEff .= "</table>";
+
+            echo $tableOreEstEff;
+        }
+
+        // Tabella: Totale generale ore docenza effettive e costo effettivo
+        $tableOreEstEffTot = "<table class='tbVisua' id='tbOreEstEffTotali'>
+            <tr>
+                <th>Totale Ore Docenza Effettive</th>
+                <th>Totale Costo Effettivo (€)</th>
+            </tr>
+            <tr>";
+
+        $stmTotEstEff = $conn->prepare("
+            SELECT 
+                COALESCE(SUM(re.oreDocenzaEffettive), 0) AS TotOreDocEff,
+                COALESCE(SUM(re.costoEffettivo), 0) AS TotCostoEff
+            FROM risorseEsterne re
+            JOIN progetti_risorse pr ON re.id = pr.fk_risorsaEsterna
+        ");
+        $stmTotEstEff->execute();
+        $rowEstEff = $stmTotEstEff->fetch();
+
+        $tableOreEstEffTot .= "<td>".$rowEstEff["TotOreDocEff"]."</td>";
+        $tableOreEstEffTot .= "<td>".number_format($rowEstEff["TotCostoEff"], 2, ',', '.')."</td>";
+        $tableOreEstEffTot .= "</tr></table>";
+
+        echo $tableOreEstEffTot;
 
 
 
@@ -711,54 +838,60 @@
         enableScroll(); // Riabilita lo scroll
     });
 
-    // Funzione per raccogliere le classi selezionate e filtrare la tabella
-    function prendiClassi() {
-        var classiSelezionate = [];
-        // Raccoglie tutti i checkbox selezionati nel contenitore delle classi
-        var checkboxes = document.querySelectorAll('#classi-selezionate input[type="checkbox"]:checked');
+// Funzione per raccogliere le classi selezionate e filtrare la tabella
+function prendiClassi() {
+    var classiSelezionate = [];
+    // Raccoglie tutti i checkbox selezionati nel contenitore delle classi
+    var checkboxes = document.querySelectorAll('#classi-selezionate input[type="checkbox"]:checked');
 
-        // Aggiunge i valori selezionati all'array
-        checkboxes.forEach(function(checkbox) {
-            classiSelezionate.push(checkbox.value);
-        });
-        
-        // Richiesta AJAX per filtrare i progetti in base alle classi selezionate
-        jQuery.ajax({
-            type: 'POST',
-            url: "crea_selez_filtrata.php",
-            dataType: 'json',
-            data: {
-                'classi': classiSelezionate,
-            },
-            success: function(response) {                        
-                if (response.success) {
-                    // Aggiorna le tabelle con i dati filtrati
-                    $('#firstTb').html(response.risposta); // Tabella elenco progetti
-                    $('#tbProgettiOre').html(response.risposta_ore_progetti); // Ore teoriche per progetto
-                    $('#tbOre').html(response.risposta_ore_totali); // Ore totali teoriche
-                    $('#tbOreEffettive').html(response.risposta_ore_effettive); // Ore effettive per progetto
-                    $('#tbOreEffTotali').html(response.risposta_ore_eff_totali); // Ore effettive totali
-                    $('#tbMatPom').html(response.risposta_mat_pom); // Mattino/pomeriggio
+    // Aggiunge i valori selezionati all'array
+    checkboxes.forEach(function(checkbox) {
+        classiSelezionate.push(checkbox.value);
+    });
+    
+    // Richiesta AJAX per filtrare i progetti in base alle classi selezionate
+    jQuery.ajax({
+        type: 'POST',
+        url: "crea_selez_filtrata.php",
+        dataType: 'json',
+        data: {
+            'classi': classiSelezionate,
+        },
+        success: function(response) {                        
+            if (response.success) {
+                // Aggiorna le tabelle con i dati filtrati
+                $('#firstTb').html(response.risposta); // Tabella elenco progetti
+                $('#tbProgettiOre').html(response.risposta_ore_progetti); // Ore teoriche per progetto
+                $('#tbOre').html(response.risposta_ore_totali); // Ore totali teoriche
+                $('#tbOreEffettive').html(response.risposta_ore_effettive); // Ore effettive per progetto
+                $('#tbOreEffTotali').html(response.risposta_ore_eff_totali); // Ore effettive totali
+                $('#tbMatPom').html(response.risposta_mat_pom); // Mattino/pomeriggio
 
-                    
-                    // Aggiorna l'array dei progetti per la stampa
-                    progetti = response.risposta_progetti;
-                    
-                    // Ricollegare gli event listener alle righe della tabella filtrata
-                    attachClickEventsToRows();
-                } else {
-                    console.error("Errore: " + response.message);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("Errore nella chiamata AJAX: ", error);
+                // Aggiorna anche le tabelle delle RISORSE ESTERNE
+                $('#tbOreEst').html(response.risposta_ore_est); // Ore docenza e costi previsti per progetto
+                $('#tbOreEstTotali').html(response.risposta_ore_est_tot); // Totale docenza/costi previsti
+                $('#tbOreEstEffettive').html(response.risposta_ore_est_eff); // Ore docenza e costi effettivi per progetto
+                $('#tbOreEstEffTotali').html(response.risposta_ore_est_eff_tot); // Totale docenza/costi effettivi
+
+                // Aggiorna l'array dei progetti per la stampa
+                progetti = response.risposta_progetti;
+                
+                // Ricollegare gli event listener alle righe della tabella filtrata
+                attachClickEventsToRows();
+            } else {
+                console.error("Errore: " + response.message);
             }
-        });
+        },
+        error: function(xhr, status, error) {
+            console.error("Errore nella chiamata AJAX: ", error);
+        }
+    });
 
-        // Chiude il popup e riabilita lo scroll
-        popup.style.display = 'none';
-        enableScroll();
-    }
+    // Chiude il popup e riabilita lo scroll
+    popup.style.display = 'none';
+    enableScroll();
+}
+
 
     // Funzione per tornare alla pagina precedente
     function torna(){

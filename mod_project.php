@@ -79,6 +79,44 @@
                 background-color: #fdfdff;
             }
 
+            .modifica-campo-content,
+            .add-ris-content,
+            .modifica-campo-classi-content,
+            .confermaElim-content {
+                background: #fff;
+                border-radius: 1rem;
+                box-shadow: 0 0 24px 0 #00245d40;
+                padding: 2rem 1.5rem 1.5rem 1.5rem;
+                max-width: 550px;
+                margin: 40px auto;
+                position: relative;
+                min-height: 180px;
+                /* effetto fade-in */
+                animation: fadeInPopup 0.25s;
+            }
+
+            @keyframes fadeInPopup {
+                from { opacity: 0; transform: scale(0.96);}
+                to { opacity: 1; transform: scale(1);}
+            }
+
+            #modifica-campo,
+            #add-ris,
+            #modifica-campo-classi,
+            #confermaElim,
+            #confermaElim2 {
+                background: rgba(0,34,93,0.16); /* leggermente blu, più elegante */
+                position: fixed !important;
+                top: 0; left: 0;
+                width: 100vw;
+                height: 100vh;
+                z-index: 2000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: opacity 0.18s;
+            }
+
         </style>
     </head>
 <body>
@@ -89,8 +127,10 @@
         $projectId = $_POST['id'];
             
         // Esegui la query per recuperare i dettagli del progetto utilizzando l'ID
-        $stm = $conn->prepare("SELECT * FROM progetti WHERE id =". $projectId);
+        $stm = $conn->prepare("SELECT * FROM progetti WHERE id = :id");
+        $stm->bindParam(':id', $projectId, PDO::PARAM_INT);
         $stm->execute();
+
         $project = $stm->fetchAll(); // Restituisce la riga corrente come array associativo
     	
         $tabGenerale = "<table id='tbVisuaDetails'><tr>";
@@ -121,14 +161,17 @@
 
 
             $tabGenerale .= "<th>Titolo:</th><td class='mod_campo' id='titolo'>". $value["titolo"]."</td></tr>";
-            $stmRef = $conn->prepare("SELECT nominativo FROM docenteReferente WHERE id =". $value["fk_docenteReferente"]);
-        	$stmRef->execute();
+            $stmRef = $conn->prepare("SELECT nominativo FROM docenteReferente WHERE id = :id");
+            $stmRef->bindParam(':id', $value["fk_docenteReferente"], PDO::PARAM_INT);
+            $stmRef->execute();
+
         	$docRef = $stmRef->fetchAll();
             foreach($docRef as $doc){
             	$tabGenerale .= "<th>Docente referente:</th><td class='mod_campo' id='docRef'>".$doc["nominativo"]."</td></tr>";
             }
-            
-            $stmDip = $conn->prepare("SELECT nome FROM dipartimento WHERE id =". $value["fk_dipartimento"]);
+
+            $stmDip = $conn->prepare("SELECT nome FROM dipartimento WHERE id = :id");
+            $stmDip->bindParam(':id', $value["fk_dipartimento"], PDO::PARAM_INT);
         	$stmDip->execute();
         	$dipart = $stmDip->fetchAll();
             foreach($dipart as $dip){
@@ -148,8 +191,10 @@
             $tabAspettiDid .= "<th>Modalità di verifica in itinere e finale:</th><td class='mod_campo' id='finale'>".$value["verifica_itinere_e_finale"]."</td></tr>";
             $tabAspettiDid .= "<th>Documentazione:</th><td class='mod_campo' id='docum'>".$value["documentazione"]."</td></tr>";
             
-            $stmClassi = $conn->prepare("SELECT c.anno_classe, c.sezione FROM progetti_classi p, classi c WHERE p.fk_progetto =".$value["id"]." AND p.fk_classe = c.id");
-        	$stmClassi->execute();
+            $stmClassi = $conn->prepare("SELECT c.anno_classe, c.sezione FROM progetti_classi p, classi c WHERE p.fk_progetto = :id AND p.fk_classe = c.id");
+            $stmClassi->bindParam(':id', $value["id"], PDO::PARAM_INT);
+            $stmClassi->execute();
+
         	$classi = $stmClassi->fetchAll();
             $tabDestinatari .= "<tr><th>Classi destinatarie del progetto:</th><td class='mod_campo' id='classi'>";
             $cont = 0;
@@ -165,15 +210,18 @@
             $tabDestinatari = substr($tabDestinatari, 0, -2);
         	$tabDestinatari .= "</td></tr>";
             
-            $stmOreClassi = $conn->prepare("SELECT p.ore_pomeriggio, p.ore_mattina FROM progetti_classi p WHERE p.fk_progetto =".$value["id"]);
-        	$stmOreClassi->execute();
+            $stmOreClassi = $conn->prepare("SELECT p.ore_pomeriggio, p.ore_mattina FROM progetti_classi p WHERE p.fk_progetto = :id");
+            $stmOreClassi->bindParam(':id', $value["id"], PDO::PARAM_INT);
+            $stmOreClassi->execute();
+
         	$oreClassi = $stmOreClassi->fetchAll();
             foreach($oreClassi as $cla){
             	$oreMatt = $cla["ore_mattina"];
                 $orePom = $cla["ore_pomeriggio"];
             }
             $tabDestinatari .="<tr><th>Ore mattina:</th><td class='mod_campo' id='oreMatt'>".$oreMatt."</td></tr><tr><th>Ore pomeriggio:</th><td class='mod_campo' id='orePom'>".$orePom."</td></tr>";
-            $stmComp = $conn->prepare("SELECT c.descrizione FROM progetti_competenze p, competenze c WHERE p.fk_progetti =".$value["id"]." AND p.fk_competenze = c.id");
+            $stmComp = $conn->prepare("SELECT c.descrizione FROM progetti_competenze p, competenze c WHERE p.fk_progetti = :id AND p.fk_competenze = c.id");
+        	$stmComp->bindParam(':id', $value["id"], PDO::PARAM_INT);
         	$stmComp->execute();
         	$competenze = $stmComp->fetchAll();
             $contaComp = 0;
@@ -182,14 +230,17 @@
 				$tabCompetenze .= "<tr><th>Competenza ".$contaComp.":</th><td class='mod_campo' id='comp".$contaComp."'>".$cmp["descrizione"]."</td>";
               }
               
-            $stmRisInt= $conn->prepare("SELECT r.id, r.nominativo, r.oreCurricolari, r.oreExtraCurricolari, r.oreSorveglianza, r.oreProgettazione FROM risorseInterne r, progetti_risorse p WHERE p.fk_progetti =".$value["id"]." AND p.fk_risorsaInterna = r.id GROUP BY r.id, r.nominativo");
-        	$stmRisInt->execute();
+            $stmRisInt= $conn->prepare("SELECT r.id, r.nominativo, r.oreCurricolari, r.oreExtraCurricolari, r.oreSorveglianza, r.oreProgettazione FROM risorseInterne r, progetti_risorse p WHERE p.fk_progetti = :id AND p.fk_risorsaInterna = r.id GROUP BY r.id, r.nominativo");
+            $stmRisInt->bindParam(':id', $value["id"], PDO::PARAM_INT);
+            $stmRisInt->execute();
+
         	$risInt = $stmRisInt->fetchAll();
             $conta = 0;
               foreach($risInt as $rsi){
               	$conta++;
 				$tabRisorseInt .= "<tr><td class='mod_campo nomRisorsa' id='nomeRis".$conta."' id-risorsa='".$rsi["id"]."'>".$rsi["nominativo"]."</td><td class='mod_campo oreCurrRisorsa' id='oreCurrRis".$conta."' id-risorsa='".$rsi["id"]."'>".$rsi["oreCurricolari"]."</td><td class='mod_campo oreExtraCurrRisorsa' id='oreExtraCurrRis".$conta."' id-risorsa='".$rsi["id"]."'>".$rsi["oreExtraCurricolari"]."</td><td class='mod_campo oreSorvRisorsa' id='oreSorvRis".$conta."' id-risorsa='".$rsi["id"]."'>".$rsi["oreSorveglianza"]."</td><td class='mod_campo oreProgRisorsa' id='oreProgRis".$conta."' id-risorsa='".$rsi["id"]."'>".$rsi["oreProgettazione"]."</td>";
-              	$stmAreaComp= $conn->prepare("SELECT DISTINCT p.areaCompetenza, p.ruolo FROM risorseInterne r, progetti_risorse p WHERE p.fk_risorsaInterna =".$rsi["id"]);
+              	$stmAreaComp= $conn->prepare("SELECT DISTINCT p.areaCompetenza, p.ruolo FROM risorseInterne r, progetti_risorse p WHERE p.fk_risorsaInterna = :id");
+              	$stmAreaComp->bindParam(':id', $rsi["id"], PDO::PARAM_INT);
         		$stmAreaComp->execute();
         		$areaComp = $stmAreaComp->fetchAll();
                 $tabRisorseInt.= "<td class='mod_campo areaCompRisorsa' id='areaCompRis".$conta."' id-risorsa='".$rsi["id"]."'>";
@@ -201,8 +252,10 @@
                 $tabRisorseInt.="</td><td class='mod_campo ruoloRisorsa' id='ruoloRis".$conta."' id-risorsa='".$rsi["id"]."'>".$ruolo."</td> <td class='icon-del'><div prendi-id='" . $rsi["id"] . "' prendi-ris='int' style='display:none;' class='extra-option delete' id='delete".$rsi["id"]."'><img src='img/delete.png' class='deleteIcon'></div></td></tr>";
               }
               
-            $stmRisExt= $conn->prepare("SELECT r.id, r.nominativo, r.oreDocenza, r.costoPrevisto, r.costiEventuali FROM risorseEsterne r, progetti_risorse p WHERE p.fk_progetti =".$value["id"]." AND p.fk_risorsaEsterna = r.id");
-        	$stmRisExt->execute();
+            $stmRisExt= $conn->prepare("SELECT r.id, r.nominativo, r.oreDocenza, r.costoPrevisto, r.costiEventuali FROM risorseEsterne r, progetti_risorse p WHERE p.fk_progetti = :id AND p.fk_risorsaEsterna = r.id");
+            $stmRisExt->bindParam(':id', $value["id"], PDO::PARAM_INT);
+            $stmRisExt->execute();
+
         	$risExt = $stmRisExt->fetchAll();
             $contaExt = 0;
               foreach($risExt as $rse){
@@ -301,7 +354,7 @@ $(document).on('click', '#titolo', function(){
     $('#modifica-campo').show();
     disableScroll();
     $('.modifica-campo-content').empty(); // Pulisci il contenuto precedente
-    $('.modifica-campo-content').append('<span id="closer">&times;</span><p class="titMod">Modifica il titolo</p> <input type="text" id="newTitolo" name="newTitolo"><input type="button" value="Salva" id="submitModifiche" onclick="prendiTitolo();">');
+    $('.modifica-campo-content').append('<button type="button" class="btn-close position-absolute end-0 top-0 m-3" aria-label="Chiudi" id="closer"></button><p class="titMod">Modifica il titolo</p> <input type="text" id="newTitolo" name="newTitolo"><button class="btn btn-success mt-3" id="submitModifiche" onclick="prendiTitolo()">Salva</button>');
 });
 
 $(document).on('click', '#docRef', function(){
@@ -330,7 +383,7 @@ $(document).on('click', '#dip', function(){
     $('#modifica-campo').show();
     disableScroll();
     $('.modifica-campo-content').empty(); // Pulisci il contenuto precedente
-    $('.modifica-campo-content').append('<span id="closer">&times;</span><p class="titMod">Modifica il dipartimento</p> <select id="newDip" name="newDip"><option value="" disabled selected></option><option value="Scienze">Scienze</option><option value="Informatica">Informatica</option><option value="Lingue">Lingue</option><option value="Arte">Arte</option><option value="Matematica">Matematica</option></select> <input type="button" value="Salva" id="submitModifiche" onclick="prendiDip();">');
+    $('.modifica-campo-content').append('<button type="button" class="btn-close position-absolute end-0 top-0 m-3" aria-label="Chiudi" id="closer"></button><p class="titMod">Modifica il dipartimento</p> <select id="newDip" name="newDip"><option value="" disabled selected></option><option value="Scienze">Scienze</option><option value="Informatica">Informatica</option><option value="Lingue">Lingue</option><option value="Arte">Arte</option><option value="Matematica">Matematica</option></select> <input type="button" value="Salva" id="submitModifiche" onclick="prendiDip();">');
 });
 
 $('#strutt, #orient, #pcto').on('click', function() {
@@ -338,7 +391,7 @@ $('#strutt, #orient, #pcto').on('click', function() {
         $('#modifica-campo').show();
         disableScroll();
         $('.modifica-campo-content').empty(); // Pulisci il contenuto precedente
-        $('.modifica-campo-content').append('<span id="closer">&times;</span><p class="titMod">Modifica riferimenti al PTOF</p><select id="newRif" name="newRif"><option value="" disabled selected></option><option value="Si">Sì</option><option value="No">No</option></select>   <input type="button" value="Salva" id="submitModifiche" onclick="prendiRif(\'' + id + '\');">');
+        $('.modifica-campo-content').append('<button type="button" class="btn-close position-absolute end-0 top-0 m-3" aria-label="Chiudi" id="closer"></button><p class="titMod">Modifica riferimenti al PTOF</p><select id="newRif" name="newRif"><option value="" disabled selected></option><option value="Si">Sì</option><option value="No">No</option></select>   <input type="button" value="Salva" id="submitModifiche" onclick="prendiRif(\'' + id + '\');">');
 });
 
 $('#contesto, #obb, #attiv, #strum, #luoghi, #finale, #docum').on('click', function() {
@@ -346,7 +399,7 @@ $('#contesto, #obb, #attiv, #strum, #luoghi, #finale, #docum').on('click', funct
         $('#modifica-campo').show();
         disableScroll();
         $('.modifica-campo-content').empty().append(
-        	'<span id="closer">&times;</span>' +
+        	'<button type="button" class="btn-close position-absolute end-0 top-0 m-3" aria-label="Chiudi" id="closer"></button>' +
             '<p class="titMod">Modifica Aspetti didattici</p>' +
             '<textarea name="newAspDid" id="newAspDid" placeholder="Scrivi qui..."></textarea>' +
             '<input type="button" value="Salva" id="submitModifiche" onclick="prendiAspDid(\'' + id + '\');">'
@@ -358,7 +411,7 @@ $('#tempi').on('click', function(){
     disableScroll();
     $('.modifica-campo-content').empty(); // Pulisci il contenuto precedente
 	$('.modifica-campo-content').append(
-        '<span id="closer">&times;</span>' +
+        '<button type="button" class="btn-close position-absolute end-0 top-0 m-3" aria-label="Chiudi" id="closer"></button>' +
         '<p class="titMod">Modifica i tempi del progetto</p>'+
         '<table id="modTempi">'+
            '<tr>'+
@@ -402,7 +455,7 @@ $('#comp1, #comp2').on('click', function() {
                 // Prendi solo la risposta e assegnala a una variabile
                 var risposta = response.risposta;
                 $('.modifica-campo-content').append(
-                    '<span id="closer">&times;</span>' +
+                    '<button type="button" class="btn-close position-absolute end-0 top-0 m-3" aria-label="Chiudi" id="closer"></button>' +
                     '<p class="titMod">Modifica competenza</p> ' + 
                     risposta +
                     '<input type="button" value="Salva" id="submitModifiche" onclick="prendiComp(\'' + id + '\', \'' + idProgetto + '\');">'
@@ -495,8 +548,8 @@ $('#oreMatt, #orePom').on('click', function(){
     $('#modifica-campo').show();
     disableScroll();
     $('.modifica-campo-content').empty(); // Pulisci il contenuto precedente
-    if(id=="oreMatt")$('.modifica-campo-content').append('<span id="closer">&times;</span><p class="titMod">Modifica le ore mattutine</p> <input type="number" id="neworeMatt" name="newOreMatt" min="0" value="'+valueOra+'">  <input type="button" value="Salva" id="submitModifiche" onclick="prendiOre(\'' + id + '\');">');
-	else $('.modifica-campo-content').append('<span id="closer">&times;</span><p class="titMod">Modifica le ore pomeridiane</p> <input type="number" id="neworePom" name="newOrePom" min="0" value="'+valueOra+'"> <input type="button" value="Salva" id="submitModifiche" onclick="prendiOre(\'' + id + '\');">');
+    if(id=="oreMatt")$('.modifica-campo-content').append('<button type="button" class="btn-close position-absolute end-0 top-0 m-3" aria-label="Chiudi" id="closer"></button><p class="titMod">Modifica le ore mattutine</p> <input type="number" id="neworeMatt" name="newOreMatt" min="0" value="'+valueOra+'">  <input type="button" value="Salva" id="submitModifiche" onclick="prendiOre(\'' + id + '\');">');
+	else $('.modifica-campo-content').append('<button type="button" class="btn-close position-absolute end-0 top-0 m-3" aria-label="Chiudi" id="closer"></button><p class="titMod">Modifica le ore pomeridiane</p> <input type="number" id="neworePom" name="newOrePom" min="0" value="'+valueOra+'"> <input type="button" value="Salva" id="submitModifiche" onclick="prendiOre(\'' + id + '\');">');
 });
 
 $('#classi').on('click', function(){
@@ -567,7 +620,7 @@ $('#classi').on('click', function(){
     <p id="deselectAll" onclick="deselezionaCheckbox()" style="display:none" >Deseleziona tutti</p>
 
 `;
-    $('.modifica-campo-classi-content').append('<span id="closer">&times;</span><p class="titMod">Modifica le ore mattutine</p> '+tbSceltaClassi+' <input type="button" value="Salva" id="submitModifiche" onclick="prendiClassi();">');
+    $('.modifica-campo-classi-content').append('<button type="button" class="btn-close position-absolute end-0 top-0 m-3" aria-label="Chiudi" id="closer"></button><p class="titMod">Modifica le ore mattutine</p> '+tbSceltaClassi+' <input type="button" value="Salva" id="submitModifiche" onclick="prendiClassi();">');
 });
 
 $('.nomRisorsa').on('click', function(){
@@ -583,7 +636,7 @@ $('.nomRisorsa').on('click', function(){
             if (response.success) {
                 // Prendi solo la risposta e assegnala a una variabile
                 var risposta = response.risposta;
-				    $('.modifica-campo-content').append('<span id="closer">&times;</span><p class="titMod">Modifica nominativo risorsa interna</p> '+risposta+' <input type="button" value="Salva" id="submitModifiche" onclick="prendiNomeRis(\'' + idRis + '\');">');
+				    $('.modifica-campo-content').append('<button type="button" class="btn-close position-absolute end-0 top-0 m-3" aria-label="Chiudi" id="closer"></button><p class="titMod">Modifica nominativo risorsa interna</p> '+risposta+' <input type="button" value="Salva" id="submitModifiche" onclick="prendiNomeRis(\'' + idRis + '\');">');
 
             } else {
                 console.error("Errore: " + response.message);
@@ -598,7 +651,7 @@ $('.oreCurrRisorsa, .oreExtraCurrRisorsa, .oreSorvRisorsa, .oreProgRisorsa').on(
     var valueOra = $(this).text();
     $('#modifica-campo').show();
     $('.modifica-campo-content').empty();
-    $('.modifica-campo-content').append('<span id="closer">&times;</span><p class="titMod">Modifica ore risorsa interna</p> <input type="number" id="ore" name="ore" min=0 value='+valueOra+'> <input type="button" value="Salva" id="submitModifiche" onclick="prendiOreRis(\'' + idRis + '\', \'' + idCell + '\');">');
+    $('.modifica-campo-content').append('<button type="button" class="btn-close position-absolute end-0 top-0 m-3" aria-label="Chiudi" id="closer"></button><p class="titMod">Modifica ore risorsa interna</p> <input type="number" id="ore" name="ore" min=0 value='+valueOra+'> <input type="button" value="Salva" id="submitModifiche" onclick="prendiOreRis(\'' + idRis + '\', \'' + idCell + '\');">');
     disableScroll();
 });
 
@@ -608,7 +661,7 @@ $('.ruoloRisorsa').on('click', function(){
     var valueOra = $(this).text();
     $('#modifica-campo').show();
     $('.modifica-campo-content').empty();
-    $('.modifica-campo-content').append('<span id="closer">&times;</span><p class="titMod">Modifica ruolo risorsa interna</p> <select id="ruolo" name="ruolo"><option value="Docente potenziamento">Docente potenziamento</option> <option value="Referente PCTO">Referente PCTO</option> <option value="Docente interno">Docente interno</option> </select> <input type="button" value="Salva" id="submitModifiche" onclick="prendiRuoloRis(\'' + idRis + '\', \'' + idCell + '\');">');
+    $('.modifica-campo-content').append('<button type="button" class="btn-close position-absolute end-0 top-0 m-3" aria-label="Chiudi" id="closer"></button><p class="titMod">Modifica ruolo risorsa interna</p> <select id="ruolo" name="ruolo"><option value="Docente potenziamento">Docente potenziamento</option> <option value="Referente PCTO">Referente PCTO</option> <option value="Docente interno">Docente interno</option> </select> <input type="button" value="Salva" id="submitModifiche" onclick="prendiRuoloRis(\'' + idRis + '\', \'' + idCell + '\');">');
     disableScroll();
 });
 
@@ -617,7 +670,7 @@ $('.areaCompRisorsa').on('click', function(){
     var idCell = $(this).attr('id');
     $('#modifica-campo').show();
     $('.modifica-campo-content').empty();
-    $('.modifica-campo-content').append('<span id="closer">&times;</span><p class="titMod">Modifica area competenza risorsa interna</p> <select id="areaComp" name="areaComp"><option value="Progettazione">Solo progettazione</option> <option value="Docenza">Solo docenza</option> <option value="Progettazione,Docenza">Entrambe</option> </select> <input type="button" value="Salva" id="submitModifiche" onclick="prendiAreaCompRis(\'' + idRis + '\', \'' + idCell + '\');">');
+    $('.modifica-campo-content').append('<button type="button" class="btn-close position-absolute end-0 top-0 m-3" aria-label="Chiudi" id="closer"></button><p class="titMod">Modifica area competenza risorsa interna</p> <select id="areaComp" name="areaComp"><option value="Progettazione">Solo progettazione</option> <option value="Docenza">Solo docenza</option> <option value="Progettazione,Docenza">Entrambe</option> </select> <input type="button" value="Salva" id="submitModifiche" onclick="prendiAreaCompRis(\'' + idRis + '\', \'' + idCell + '\');">');
     disableScroll();
 });
 
@@ -627,7 +680,7 @@ $('.nomRisorsaExt').on('click', function(){
     $('#modifica-campo').show();
     disableScroll();
     $('.modifica-campo-content').empty(); // Pulisci il contenuto precedente
-    $('.modifica-campo-content').append('<span id="closer">&times;</span><p class="titMod">Modifica nominativo risorsa esterna</p> <input type="text" id="newNomRisExt" name="newNomRisExt"><input type="button" value="Salva" id="submitModifiche" onclick="prendiNomExt(\'' + idRis + '\', \'' + idCell + '\');">');
+    $('.modifica-campo-content').append('<button type="button" class="btn-close position-absolute end-0 top-0 m-3" aria-label="Chiudi" id="closer"></button><p class="titMod">Modifica nominativo risorsa esterna</p> <input type="text" id="newNomRisExt" name="newNomRisExt"><input type="button" value="Salva" id="submitModifiche" onclick="prendiNomExt(\'' + idRis + '\', \'' + idCell + '\');">');
 });
 
 $('.oreDocRisorsaExt').on('click', function(){
@@ -637,7 +690,7 @@ $('.oreDocRisorsaExt').on('click', function(){
     $('#modifica-campo').show();
     disableScroll();
     $('.modifica-campo-content').empty(); // Pulisci il contenuto precedente
-    $('.modifica-campo-content').append('<span id="closer">&times;</span><p class="titMod">Modifica ore docenza risorsa esterna</p> <input type="number" id="newOreDocRisExt" name="newOreDocRisExt" value='+valueOra+' min=0><input type="button" value="Salva" id="submitModifiche" onclick="prendiOreRisExt(\'' + idRis + '\', \'' + idCell + '\');">');
+    $('.modifica-campo-content').append('<button type="button" class="btn-close position-absolute end-0 top-0 m-3" aria-label="Chiudi" id="closer"></button><p class="titMod">Modifica ore docenza risorsa esterna</p> <input type="number" id="newOreDocRisExt" name="newOreDocRisExt" value='+valueOra+' min=0><input type="button" value="Salva" id="submitModifiche" onclick="prendiOreRisExt(\'' + idRis + '\', \'' + idCell + '\');">');
 });
 
 $('.costoRisorsaExt').on('click', function(){
@@ -647,7 +700,7 @@ $('.costoRisorsaExt').on('click', function(){
     $('#modifica-campo').show();
     disableScroll();
     $('.modifica-campo-content').empty(); // Pulisci il contenuto precedente
-    $('.modifica-campo-content').append('<span id="closer">&times;</span><p class="titMod">Modifica costo previsto risorsa esterna</p> <input type="number" id="newCostoRisExt" name="newCostoRisExt" value='+valueOra+' min=0><input type="button" value="Salva" id="submitModifiche" onclick="prendiCostoRisExt(\'' + idRis + '\', \'' + idCell + '\');">');
+    $('.modifica-campo-content').append('<button type="button" class="btn-close position-absolute end-0 top-0 m-3" aria-label="Chiudi" id="closer"></button><p class="titMod">Modifica costo previsto risorsa esterna</p> <input type="number" id="newCostoRisExt" name="newCostoRisExt" value='+valueOra+' min=0><input type="button" value="Salva" id="submitModifiche" onclick="prendiCostoRisExt(\'' + idRis + '\', \'' + idCell + '\');">');
 });
 
 $('.costiEventualiRisorsaExt').on('click', function(){
@@ -656,7 +709,7 @@ $('.costiEventualiRisorsaExt').on('click', function(){
     $('#modifica-campo').show();
     disableScroll();
     $('.modifica-campo-content').empty(); // Pulisci il contenuto precedente
-    $('.modifica-campo-content').append('<span id="closer">&times;</span><p class="titMod">Modifica costo previsto risorsa esterna</p> <textarea name="newCostiEventualiRisExt" id="newCostiEventualiRisExt" placeholder="Scrivi qui..."></textarea> <input type="button" value="Salva" id="submitModifiche" onclick="prendiCostiEventualiRisExt(\'' + idRis + '\', \'' + idCell + '\');">');
+    $('.modifica-campo-content').append('<button type="button" class="btn-close position-absolute end-0 top-0 m-3" aria-label="Chiudi" id="closer"></button><p class="titMod">Modifica costo previsto risorsa esterna</p> <textarea name="newCostiEventualiRisExt" id="newCostiEventualiRisExt" placeholder="Scrivi qui..."></textarea> <input type="button" value="Salva" id="submitModifiche" onclick="prendiCostiEventualiRisExt(\'' + idRis + '\', \'' + idCell + '\');">');
 });
 
 function prendiTitolo() {
@@ -1243,7 +1296,7 @@ $('#miniTit').on('click', function(){
         },
         success: function(response) {
        	 	// Aggiungi direttamente la risposta HTML al tuo elemento
-        	$('.add-ris-content').append('<span id="closer">&times;</span><p class="titMod">Aggiungi risorsa interna</p><div id="contNewRis">'+areaComp+' '+response+'</div><input type="button" value="Salva" id="submitModifiche" onclick="insNewRisInt();">');
+        	$('.add-ris-content').append('<button type="button" class="btn-close position-absolute end-0 top-0 m-3" aria-label="Chiudi" id="closer"></button><p class="titMod">Aggiungi risorsa interna</p><div id="contNewRis">'+areaComp+' '+response+'</div><input type="button" value="Salva" id="submitModifiche" onclick="insNewRisInt();">');
     	},
         error: function(xhr, status, error) {
                console.error("Errore AJAX: " + status + " - " + error);
@@ -1269,7 +1322,7 @@ $('#miniTit2').on('click', function(){
                         <label class="labAddRis" for="risorseExtore">Eventuali Costi Aggiuntivi:</label>
                         <textarea id="risorseExteventualicosti" name="risorseExteventualicosti" ></textarea>
                         `;
-    $('.add-ris-content').append('<span id="closer">&times;</span><p class="titMod">Aggiungi risorsa interna</p><div id="contNewRis"> '+formHtml+' </div><input type="button" value="Salva" id="submitModifiche" onclick="insNewRisExt();">');
+    $('.add-ris-content').append('<button type="button" class="btn-close position-absolute end-0 top-0 m-3" aria-label="Chiudi" id="closer"></button><p class="titMod">Aggiungi risorsa interna</p><div id="contNewRis"> '+formHtml+' </div><input type="button" value="Salva" id="submitModifiche" onclick="insNewRisExt();">');
 
 });
 

@@ -113,14 +113,14 @@ foreach ($ArrPrj as $progetto) {
             $varRef = $resultRef["nominativo"];
         }
         
-        // Costruisco la riga della tabella con i dati del progetto
+        // Costruisco la riga della tabella SENZA onclick inline (RIMOSSO onclick)
         $table .= "<tr>
                         <td style='display:none;'>" . $row["id"] . "</td>
-                        <td onclick='eventi(" . $row["id"] . ")'>" . $row["titolo"] . "</td>
-                        <td onclick='eventi(" . $row["id"] . ")'>" . $varDip . "</td>
-                        <td onclick='eventi(" . $row["id"] . ")'>" . $varRef . "</td>
-                        <td class='icon-mod'><div prendi-id2='" . $row["id"] . "' style='display:none;' class='extra-option-left' id='extraOptionLeft-" . $row["id"] . "' onclick='modifica(" . $row["id"] . ")'><img src='img/modifica.png' class='modIcon'></div></td>
-                        <td class='icon-del'><div prendi-id='" . $row["id"] . "' style='display:none;' class='extra-option' id='extraOption-" . $row["id"] . "' onclick='elimina(" . $row["id"] . ")'><img src='img/delete.png' class='deleteIcon'></div></td>
+                        <td>" . $row["titolo"] . "</td>
+                        <td>" . $varDip . "</td>
+                        <td>" . $varRef . "</td>
+                        <td class='icon-mod'><div prendi-id2='" . $row["id"] . "' style='display:none;' class='extra-option-left' id='extraOptionLeft-" . $row["id"] . "'><img src='img/modifica.png' class='modIcon'></div></td>
+                        <td class='icon-del'><div prendi-id='" . $row["id"] . "' style='display:none;' class='extra-option' id='extraOption-" . $row["id"] . "'><img src='img/delete.png' class='deleteIcon'></div></td>
                    </tr>";
     }
 }

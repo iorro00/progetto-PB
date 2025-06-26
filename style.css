@@ -759,52 +759,79 @@ flex-grow: 1;
 .hidden {
     display: none;
 }
-
 #boxOreEff {
     position: fixed;
-    top: 0; left: 0;
+    top: 0;
+    left: 0;
     width: 100vw;
     height: 100vh;
     background: rgba(0,0,0,0.5);
     z-index: 1200;
     backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     animation: fadeInBg 0.25s;
 }
 
-/* Animazione fade in */
-@keyframes fadeInBg {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-/* Popup Box */
 .boxOreEff-content {
     background: #fff;
-    margin-top: 50px;
-    margin-left: 32%;
-    width: 70%;
+    width: 95vw;
     max-width: 650px;
-    min-width: 340px;
-    height: auto;
-    min-height: 320px;
-    padding: 38px 44px 32px 44px;
     border-radius: 18px;
     box-shadow: 0 10px 35px rgba(0, 32, 61, 0.14);
     position: relative;
     display: flex;
     flex-direction: column;
-    align-items: stretch;
-    overflow-y: auto;
-    max-height: 88vh;
-    animation: fadeInPopup 0.28s;
-} 
-
-
-
-@keyframes fadeInPopup {
-    from { transform: translateY(40px) scale(0.95); opacity: 0; }
-    to   { transform: translateY(0) scale(1); opacity: 1; }
+    padding: 22px;
 }
+
+#closePopup.pippi {
+    position: absolute;
+    top: 18px;
+    right: 26px;
+    font-size: 30px;
+    font-weight: 600;
+    color: #00245d;
+    cursor: pointer;
+    transition: color 0.2s;
+    z-index: 10;
+}
+#closePopup.pippi:hover {
+    color: #c0392b;
+    background: #f2f3f6;
+    border-radius: 50%;
+}
+
+@media (max-width: 900px) {
+  .boxOreEff-content {
+    width: 98vw;
+    max-width: 98vw;
+    font-size: 15px;
+    padding: 10px 4vw;
+  }
+}
+@media (max-width: 600px) {
+  .boxOreEff-content {
+    width: 100vw;
+    max-width: 100vw;
+    font-size: 13px;
+    padding: 4px 1vw;
+  }
+  #closePopup.pippi {
+    top: 8px;
+    right: 8px;
+    font-size: 25px;
+  }
+}
+
+@keyframes fadeInBg {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+
+
 
 
 #boxFiltri {
@@ -941,7 +968,7 @@ flex-grow: 1;
     background-color: white;
 }
 
-#insOreEff, #insOreDocEff{
+.insOreEff, .insOreDocEff{
 	font-size: 30px;
     cursor: pointer;
     color: #00245d;
@@ -950,14 +977,14 @@ flex-grow: 1;
     padding-right: 7px;
 }
 
-#insOreEff:hover{
+.insOreEff:hover{
 	color:white;
     border: 2px solid #00245d;
     background-color:#00245d;
     border-radius:30px;
     cursor: pointer;
 }
-#insOreDocEff:hover{
+.insOreDocEff:hover{
 	color:white;
     border: 2px solid #00245d;
     background-color:#00245d;

@@ -411,7 +411,7 @@
     </body>
     <script  src="script.js"></script>
     <script>
-    function eventi(id){
+      function eventi(id){
       document.getElementById('projectIdTaken').value = id; // Imposta l'ID del progetto nel campo nascosto
       document.getElementById('projectForm').submit(); // Invia il modulo
     }
@@ -500,9 +500,9 @@ function prendiClassi() {
     });
     
     var elemento = document.querySelector('p[get-nominativo]');
-	var nominativo = elemento.getAttribute('get-nominativo');
+    var nominativo = elemento.getAttribute('get-nominativo');
 
-     jQuery.ajax({
+    jQuery.ajax({
         type: 'POST',
         url: "crea_selez_filtrata2.php",
         dataType: 'json',
@@ -512,10 +512,11 @@ function prendiClassi() {
         },
         success: function(response) {                        
             if (response.success) {
-                // Prendi solo la risposta e assegnala a una variabile
                 var tb = response.risposta;
                 $('#tbRendi').html(tb);
-				
+
+                // *** Questa riga è fondamentale! ***
+                bindRendiTableEvents();
             } else {
                 console.error("Errore: " + response.message);
             }
@@ -525,9 +526,10 @@ function prendiClassi() {
         }
     });
 
-    popup.style.display='none'; //quando schiacchio invio, il popup si chiude
+    popup.style.display='none';
     enableScroll();
-}   
+}
+
     
 
 $('table').on('mouseleave', 'tr', function() {
@@ -623,6 +625,43 @@ var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggl
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl)
         });
+
+  // Funzione per gestire la modifica
+  function modifica(id) {
+    document.getElementById('hiddenId').value = id;
+    document.getElementById('hiddenForm').submit();
+  }
+
+  // Funzione per riattivare tutti gli event handler sulle icone dopo ogni refresh della tabella
+  function bindRendiTableEvents() {
+    // Titolo, dip, referente → dettagli
+    document.querySelectorAll('#tbRendi tr:not(:first-child)').forEach(function(row) {
+      // Click su colonne info (escludi le colonne delle icone)
+      row.querySelectorAll('td:not(:nth-last-child(-n+2))').forEach(function(cell) {
+        cell.onclick = function() {
+          var projectId = row.cells[0].innerText;
+          document.getElementById('projectIdTaken').value = projectId;
+          document.getElementById('projectForm').submit();
+        }
+      });
+    });
+
+    // Click su icona MODIFICA
+    document.querySelectorAll('.extra-option-left').forEach(div => {
+      const id = div.getAttribute('prendi-id2');
+      div.onclick = () => modifica(id);
+    });
+
+    // Click su icona ELIMINA
+    document.querySelectorAll('.extra-option').forEach(div => {
+      const id = div.getAttribute('prendi-id');
+      div.onclick = function() { elimina(id); };
+    });
+  }
+
+  // All'avvio
+  document.addEventListener('DOMContentLoaded', bindRendiTableEvents);
+
 
 </script>
 </html>
